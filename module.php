@@ -4,9 +4,15 @@ class MagicLinkWebclientModule extends AApiModule
 {
 	protected $oMinModuleDecorator;
 	
+	protected $sRegisterModuleHash = '';
+	
 	protected $aRequireModules = array(
 		'Min'
 	); 
+	
+	protected $aSettingsMap = array(
+		'RegisterModuleName' => array('StandardRegisterFormWebclient', 'string'),
+	);
 	
 	/**
 	* Returns Min module decorator.
@@ -22,15 +28,52 @@ class MagicLinkWebclientModule extends AApiModule
 		
 		return $this->oMinModuleDecorator;
 	}
-		
 	
+	/**
+	 * Returns register module hash.
+	 * 
+	 * @return string
+	 */
+	protected function getRegisterModuleHash()
+	{
+		if (empty($this->sRegisterModuleHash))
+		{
+			$oRegisterModuleDecorator = \CApi::GetModuleDecorator($this->getConfig('RegisterModuleName'));
+			$oRegisterModuleSettings = $oRegisterModuleDecorator->GetAppData();
+			$this->sRegisterModuleHash = $oRegisterModuleSettings['HashModuleName'];
+		}
+		return $this->sRegisterModuleHash;
+	}
+	
+	/**
+	 * Initializes module.
+	 */
 	public function init()
 	{
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
 		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/MagicLinkView.html', $this->sName);
 	}
 	
-	public function GetMagicLink($UserId)
+	/**
+	 * Returns module settings.
+	 * 
+	 * @return array
+	 */
+	public function GetAppData()
+	{
+		return array(
+			'RegisterModuleHash' => $this->getRegisterModuleHash(),
+			'RegisterModuleName' => $this->getConfig('RegisterModuleName'),
+		);
+	}
+	
+	/**
+	 * Returns magic link hash for specified user.
+	 * 
+	 * @param int $UserId User identificator.
+	 * @return string
+	 */
+	public function GetMagicLinkHash($UserId)
 	{
 		$mHash = '';
 		$oMin = $this->getMinModuleDecorator();
@@ -58,9 +101,14 @@ class MagicLinkWebclientModule extends AApiModule
 			return '';
 		}
 		
-		return \api_Utils::GetAppUrl() . '?magic-link=' . $mHash;
+		return $mHash;
 	}
 	
+	/**
+	 * Returns user for magic link from cookie.
+	 * 
+	 * @param \CUser $oUser
+	 */
 	public function onCreateOAuthAccount(&$oUser)
 	{
 		if (isset($_COOKIE['MagicLink']))
@@ -80,6 +128,5 @@ class MagicLinkWebclientModule extends AApiModule
 				}
 			}			
 		}
-		
 	}
 }

@@ -111,12 +111,12 @@ class MagicLinkWebclientModule extends AApiModule
 	 */
 	public function onCreateOAuthAccount(&$oUser)
 	{
-		if (isset($_COOKIE['MagicLink']))
+		if (isset($_COOKIE['MagicLinkHash']))
 		{
 			$oMin = $this->getMinModuleDecorator();
 			if ($oMin)
 			{
-				$mHash = $oMin->GetMinByHash($_COOKIE['MagicLink']);
+				$mHash = $oMin->GetMinByHash($_COOKIE['MagicLinkHash']);
 				if (isset($mHash['__hash__'], $mHash[0]))
 				{
 					$iUserId = $mHash[0];

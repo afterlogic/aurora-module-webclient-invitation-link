@@ -50,6 +50,7 @@ class MagicLinkWebclientModule extends AApiModule
 	 */
 	public function init()
 	{
+		$this->subscribeEvent('StandardRegisterFormWebclient::Register::before', array($this, 'onRegister'));
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
 		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/MagicLinkView.html', $this->sName);
 	}
@@ -104,6 +105,26 @@ class MagicLinkWebclientModule extends AApiModule
 		return $mHash;
 	}
 	
+	protected function getUserByMagicLinkHash($sMagicLinkHash)
+	{
+		$oUser = null;
+		$oMin = $this->getMinModuleDecorator();
+		if ($oMin)
+		{
+			$mHash = $oMin->GetMinByHash($sMagicLinkHash);
+			if (isset($mHash['__hash__'], $mHash[0]))
+			{
+				$iUserId = $mHash[0];
+				$oCore = \CApi::GetModuleDecorator('Core');
+				if ($oCore)
+				{
+					$oUser = $oCore->GetUser($iUserId);
+				}
+			}
+		}
+		return $oUser;
+	}
+	
 	/**
 	 * Returns user for magic link from cookie.
 	 * 
@@ -113,20 +134,21 @@ class MagicLinkWebclientModule extends AApiModule
 	{
 		if (isset($_COOKIE['MagicLinkHash']))
 		{
-			$oMin = $this->getMinModuleDecorator();
-			if ($oMin)
+			$oFoundUser = $this->getUserByMagicLinkHash($_COOKIE['MagicLinkHash']);
+			if (!empty($oFoundUser))
 			{
-				$mHash = $oMin->GetMinByHash($_COOKIE['MagicLinkHash']);
-				if (isset($mHash['__hash__'], $mHash[0]))
-				{
-					$iUserId = $mHash[0];
-					$oCore = \CApi::GetModuleDecorator('Core');
-					if ($oCore)
-					{
-						$oUser = $oCore->GetUser($iUserId);
-					}
-				}
-			}			
+				$oUser = $oFoundUser;
+			}
+		}
+	}
+	
+	public function onRegister(&$aParams)
+	{
+		$sMagicLinkHash = $aParams['MagicLinkHash'];
+		if (!empty($sMagicLinkHash))
+		{
+			$oUser = $this->getUserByMagicLinkHash($sMagicLinkHash);
+			$aParams['UserId'] = $oUser->iId;
 		}
 	}
 }

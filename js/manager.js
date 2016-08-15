@@ -27,11 +27,20 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 	{
 		return {
 			start: function (ModulesManager) {
-				var aHashArray = Routing.getCurrentHashArray();
-				if (aHashArray.length >= 2 && aHashArray[0] === Settings.RegisterModuleHash)
-				{
-					$.cookie('MagicLinkHash', aHashArray[1], { expires: 30 });
-				}
+				App.subscribeEvent('StandardRegisterFormWebclient::ShowView::after', function (oParams) {
+					if ('CRegisterView' === oParams.Name)
+					{
+						var aHashArray = Routing.getCurrentHashArray();
+						if (aHashArray.length >= 2 && aHashArray[0] === Settings.RegisterModuleHash)
+						{
+							$.cookie('MagicLinkHash', aHashArray[1], { expires: 30 });
+						}
+						else
+						{
+							$.removeCookie('MagicLinkHash');
+						}
+					}
+				});
 				App.subscribeEvent('SendAjaxRequest::before', function (oParams) {
 					if (oParams.Module === Settings.RegisterModuleName && oParams.Method === 'Register')
 					{
@@ -64,7 +73,7 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 										{
 											var sLink = Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]);
 											oParams.View.magicLink(sLink);
-											aMagicLinks[iId] = oResponse.Result;
+											aMagicLinks[iId] = sLink;
 										}
 									});
 								}

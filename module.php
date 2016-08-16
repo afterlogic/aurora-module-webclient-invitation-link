@@ -139,6 +139,7 @@ class MagicLinkWebclientModule extends AApiModule
 			$oFoundUser = $this->getUserByMagicLinkHash($_COOKIE['MagicLinkHash']);
 			if (!empty($oFoundUser))
 			{
+				unset($_COOKIE['MagicLinkHash']);
 				$oUser = $oFoundUser;
 			}
 		}

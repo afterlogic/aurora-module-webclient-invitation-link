@@ -51,6 +51,8 @@ class MagicLinkWebclientModule extends AApiModule
 	public function init()
 	{
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
+		$this->subscribeEvent('Core::AfterDeleteUser', array($this, 'onAfterDeleteUser'));		
+		
 		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/MagicLinkView.html', $this->sName);
 	}
 	
@@ -129,4 +131,19 @@ class MagicLinkWebclientModule extends AApiModule
 			}			
 		}
 	}
+	
+	/**
+	 * Deletes hash which are owened by the specified user.
+	 * 
+	 * @param int $iUserId User Identificator.
+	 */	
+	public function onAfterDeleteUser($iUserId)
+	{
+		$oMin = $this->getMinModuleDecorator();
+		if ($oMin)
+		{
+			$sMinId = implode('|', array($iUserId, md5($iUserId)));
+			$oMin->DeleteMinByID($sMinId);
+		}
+	}		
 }

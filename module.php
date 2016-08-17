@@ -50,7 +50,9 @@ class MagicLinkWebclientModule extends AApiModule
 	 */
 	public function init()
 	{
-		$this->subscribeEvent('StandardRegisterFormWebclient::Register::before', array($this, 'onRegister'));
+		$this->subscribeEvent('Register::before', array($this, 'onRegisterBefore'));
+		$this->subscribeEvent('Register::after', array($this, 'onRegisterAfter'));
+		
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
 		$this->subscribeEvent('Core::AfterDeleteUser', array($this, 'onAfterDeleteUser'));		
 		
@@ -87,13 +89,22 @@ class MagicLinkWebclientModule extends AApiModule
 
 			if (!$mHash)
 			{
-				$mHash = $oMin->CreateMin($sMinId, array($UserId));
+				$mHash = $oMin->CreateMin(
+						$sMinId, 
+						array(
+							'UserId' => $UserId
+						)
+				);
 			}
 			else 
 			{
-				if (isset($mHash['__hash__']))
+				if (isset($mHash['__hash__']) && !isset($mHash['Registered']))
 				{
 					$mHash = $mHash['__hash__'];
+				}
+				else
+				{
+					$mHash = '';
 				}
 			}
 		}
@@ -114,9 +125,9 @@ class MagicLinkWebclientModule extends AApiModule
 		if ($oMin)
 		{
 			$mHash = $oMin->GetMinByHash($sMagicLinkHash);
-			if (isset($mHash['__hash__'], $mHash[0]))
+			if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
 			{
-				$iUserId = $mHash[0];
+				$iUserId = $mHash['UserId'];
 				$oCore = \CApi::GetModuleDecorator('Core');
 				if ($oCore)
 				{
@@ -136,22 +147,53 @@ class MagicLinkWebclientModule extends AApiModule
 	{
 		if (isset($_COOKIE['MagicLinkHash']))
 		{
-			$oFoundUser = $this->getUserByMagicLinkHash($_COOKIE['MagicLinkHash']);
+			$sMagicLinkHash = $_COOKIE['MagicLinkHash'];
+			
+			$oFoundUser = $this->getUserByMagicLinkHash($sMagicLinkHash);
 			if (!empty($oFoundUser))
 			{
 				unset($_COOKIE['MagicLinkHash']);
 				$oUser = $oFoundUser;
+				
+				$oMin = $this->getMinModuleDecorator();
+				if ($oMin)
+				{
+					$mHash = $oMin->GetMinByHash($sMagicLinkHash);
+					if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
+					{
+						$mHash['Registered'] = true;
+						$oMin->UpdateMinByHash($sMagicLinkHash, $mHash);
+					}
+				}
 			}
 		}
 	}
 	
-	public function onRegister(&$aParams)
+	public function onRegisterBefore(&$aParams)
 	{
 		$sMagicLinkHash = $aParams['MagicLinkHash'];
 		if (!empty($sMagicLinkHash))
 		{
 			$oUser = $this->getUserByMagicLinkHash($sMagicLinkHash);
 			$aParams['UserId'] = $oUser->iId;
+		}
+	}
+	
+	public function onRegisterAfter(&$aParams)
+	{
+		$sMagicLinkHash = $aParams['MagicLinkHash'];
+		if (!empty($sMagicLinkHash))
+		{
+			$oMin = $this->getMinModuleDecorator();
+			if ($oMin)
+			{
+				$mHash = $oMin->GetMinByHash($sMagicLinkHash);
+				if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
+				{
+					$mHash['Registered'] = true;
+					$oMin->UpdateMinByHash($sMagicLinkHash, $mHash);
+				}
+			}
 		}
 	}
 	

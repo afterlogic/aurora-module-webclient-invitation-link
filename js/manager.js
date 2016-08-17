@@ -64,21 +64,12 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 						oParams.View.id.subscribe(function (iId) {
 							if (iId > 0)
 							{
-								if (aMagicLinks[iId])
-								{
-									oParams.View.magicLink(aMagicLinks[iId]);
-								}
-								else
-								{
-									Ajax.send('%ModuleName%', 'GetMagicLinkHash', { 'UserId': iId }, function (oResponse) {
-										if (oResponse.Result)
-										{
-											var sLink = Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]);
-											oParams.View.magicLink(sLink);
-											aMagicLinks[iId] = sLink;
-										}
-									});
-								}
+								oParams.View.magicLink(aMagicLinks[iId] ? aMagicLinks[iId] : '');
+								Ajax.send('%ModuleName%', 'GetMagicLinkHash', { 'UserId': iId }, function (oResponse) {
+									var sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : '';
+									oParams.View.magicLink(sLink);
+									aMagicLinks[iId] = sLink;
+								});
 							}
 							else
 							{

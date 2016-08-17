@@ -51,6 +51,8 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 		};
 	}
 	
+	$.removeCookie('MagicLinkHash');
+	
 	if (bAdminUser)
 	{
 		return {

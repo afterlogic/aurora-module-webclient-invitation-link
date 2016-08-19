@@ -53,7 +53,7 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 				Ajax.send('%ModuleName%', 'GetUserName', { 'MagicLinkHash': $.cookie('MagicLinkHash') }, function (oResponse) {
 					if (oResponse.Result)
 					{
-						App.broadcastEvent('ShowWelcomeRegisterText', { 'WelcomeText': TextUtils.i18n('%MODULENAME%/LABEL_WELCOME', {'USERNAME': oResponse.Result, 'SITE_NAME': UserSettings.SiteName}) });
+						App.broadcastEvent('ShowWelcomeRegisterText', { 'UserName': oResponse.Result, 'WelcomeText': TextUtils.i18n('%MODULENAME%/LABEL_WELCOME', {'USERNAME': oResponse.Result, 'SITE_NAME': UserSettings.SiteName}) });
 					}
 				});
 			}

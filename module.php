@@ -50,6 +50,8 @@ class MagicLinkWebclientModule extends AApiModule
 	 */
 	public function init()
 	{
+		$this->setNonAuthorizedMethods(array('GetUserName'));
+		
 		$this->subscribeEvent('Register::before', array($this, 'onRegisterBefore'));
 		$this->subscribeEvent('Register::after', array($this, 'onRegisterAfter'));
 		
@@ -210,5 +212,20 @@ class MagicLinkWebclientModule extends AApiModule
 			$sMinId = implode('|', array($iUserId, md5($iUserId)));
 			$oMin->DeleteMinByID($sMinId);
 		}
-	}		
+	}
+	
+	/**
+	 * Returns name of user obtained from magic link hash.
+	 * @param string $MagicLinkHash Magic link hash with information about user and its registration status.
+	 * @return string
+	 */
+	public function GetUserName($MagicLinkHash)
+	{
+		$oUser = $this->getUserByMagicLinkHash($MagicLinkHash);
+		if ($oUser)
+		{
+			return $oUser->Name;
+		}
+		return '';
+	}
 }

@@ -8,9 +8,12 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 		$ = require('jquery'),
 		ko = require('knockout'),
 		
+		TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
+		
 		Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 		App = require('%PathToCoreWebclientModule%/js/App.js'),
 		Routing = require('%PathToCoreWebclientModule%/js/Routing.js'),
+		UserSettings = require('%PathToCoreWebclientModule%/js/Settings.js'),
 		
 		Settings = require('modules/%ModuleName%/js/Settings.js'),
 		oSettings = _.extend({}, oAppData[Settings.ServerModuleName] || {}, oAppData['%ModuleName%'] || {}),
@@ -45,6 +48,12 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 					if (oParams.Module === Settings.RegisterModuleName && oParams.Method === 'Register')
 					{
 						oParams.Parameters.MagicLinkHash = $.cookie('MagicLinkHash');
+					}
+				});
+				Ajax.send('%ModuleName%', 'GetUserName', { 'MagicLinkHash': $.cookie('MagicLinkHash') }, function (oResponse) {
+					if (oResponse.Result)
+					{
+						App.broadcastEvent('ShowWelcomeRegisterText', { 'WelcomeText': TextUtils.i18n('%MODULENAME%/LABEL_WELCOME', {'USERNAME': oResponse.Result, 'SITE_NAME': UserSettings.SiteName}) });
 					}
 				});
 			}

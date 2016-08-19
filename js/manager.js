@@ -13,6 +13,7 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 		Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 		App = require('%PathToCoreWebclientModule%/js/App.js'),
 		Routing = require('%PathToCoreWebclientModule%/js/Routing.js'),
+		Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 		UserSettings = require('%PathToCoreWebclientModule%/js/Settings.js'),
 		
 		Settings = require('modules/%ModuleName%/js/Settings.js'),
@@ -21,10 +22,16 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 		bAdminUser = iUserRole === Enums.UserRole.SuperAdmin,
 		bAnonimUser = iUserRole === Enums.UserRole.Anonymous,
 		
-		aMagicLinks = []
+		aMagicLinks = [],
+		aHashArray = Routing.getCurrentHashArray(),
+		sMagicLinkHash = ''
 	;
 	
 	Settings.init(oSettings);
+	if (aHashArray.length >= 2 && aHashArray[0] === Settings.RegisterModuleHash)
+	{
+		sMagicLinkHash = aHashArray[1];
+	}
 
 	if (!bPublic && bAnonimUser)
 	{
@@ -33,10 +40,9 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 				App.subscribeEvent('StandardRegisterFormWebclient::ShowView::after', function (oParams) {
 					if ('CRegisterView' === oParams.Name)
 					{
-						var aHashArray = Routing.getCurrentHashArray();
-						if (aHashArray.length >= 2 && aHashArray[0] === Settings.RegisterModuleHash)
+						if (sMagicLinkHash !== '')
 						{
-							$.cookie('MagicLinkHash', aHashArray[1], { expires: 30 });
+							$.cookie('MagicLinkHash', sMagicLinkHash, { expires: 30 });
 						}
 						else
 						{
@@ -61,6 +67,16 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 	}
 	
 	$.removeCookie('MagicLinkHash');
+	
+	if (sMagicLinkHash !== '')
+	{
+		Ajax.send('%ModuleName%', 'GetUserName', { 'MagicLinkHash': sMagicLinkHash }, function (oResponse) {
+			if (oResponse.Result)
+			{
+				Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_LOGGED_IN'), 0);
+			}
+		});
+	}
 	
 	if (bAdminUser)
 	{

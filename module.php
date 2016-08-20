@@ -4,14 +4,13 @@ class MagicLinkWebclientModule extends AApiModule
 {
 	protected $oMinModuleDecorator;
 	
-	protected $sRegisterModuleHash = '';
-	
 	protected $aRequireModules = array(
 		'Min'
 	); 
 	
 	protected $aSettingsMap = array(
 		'RegisterModuleName' => array('StandardRegisterFormWebclient', 'string'),
+		'LoginModuleName' => array('StandardLoginFormWebclient', 'string'),
 	);
 	
 	/**
@@ -36,13 +35,21 @@ class MagicLinkWebclientModule extends AApiModule
 	 */
 	protected function getRegisterModuleHash()
 	{
-		if (empty($this->sRegisterModuleHash))
-		{
-			$oRegisterModuleDecorator = \CApi::GetModuleDecorator($this->getConfig('RegisterModuleName'));
-			$oRegisterModuleSettings = $oRegisterModuleDecorator->GetAppData();
-			$this->sRegisterModuleHash = $oRegisterModuleSettings['HashModuleName'];
-		}
-		return $this->sRegisterModuleHash;
+		$oRegisterModuleDecorator = \CApi::GetModuleDecorator($this->getConfig('RegisterModuleName'));
+		$oRegisterModuleSettings = $oRegisterModuleDecorator->GetAppData();
+		return $oRegisterModuleSettings['HashModuleName'];
+	}
+	
+	/**
+	 * Returns login module hash.
+	 * 
+	 * @return string
+	 */
+	protected function getLoginModuleHash()
+	{
+		$oLoginModuleDecorator = \CApi::GetModuleDecorator($this->getConfig('LoginModuleName'));
+		$oLoginModuleSettings = $oLoginModuleDecorator->GetAppData();
+		return $oLoginModuleSettings['HashModuleName'];
 	}
 	
 	/**
@@ -71,6 +78,7 @@ class MagicLinkWebclientModule extends AApiModule
 		return array(
 			'RegisterModuleHash' => $this->getRegisterModuleHash(),
 			'RegisterModuleName' => $this->getConfig('RegisterModuleName'),
+			'LoginModuleHash' => $this->getLoginModuleHash(),
 		);
 	}
 	

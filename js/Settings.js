@@ -8,6 +8,7 @@ module.exports = {
 	ServerModuleName: '%ModuleName%',
 	RegisterModuleName: 'StandardRegisterFormWebclient',
 	RegisterModuleHash: 'register',
+	LoginModuleHash: 'login',
 	
 	/**
 	 * Initializes settings from AppData section.
@@ -19,6 +20,7 @@ module.exports = {
 		{
 			this.RegisterModuleName = Types.pString(oAppDataSection.RegisterModuleName);
 			this.RegisterModuleHash = Types.pString(oAppDataSection.RegisterModuleHash);
+			this.LoginModuleHash = Types.pString(oAppDataSection.LoginModuleHash);
 		}
 	}
 };

@@ -48,18 +48,22 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 						{
 							$.removeCookie('MagicLinkHash');
 						}
+						Ajax.send('%ModuleName%', 'GetUserName', { 'MagicLinkHash': sMagicLinkHash }, function (oResponse) {
+							if (oResponse.Result)
+							{
+								App.broadcastEvent('ShowWelcomeRegisterText', { 'UserName': oResponse.Result, 'WelcomeText': TextUtils.i18n('%MODULENAME%/LABEL_WELCOME', {'USERNAME': oResponse.Result, 'SITE_NAME': UserSettings.SiteName}) });
+							}
+							else
+							{
+								Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_MAGIC_LINK_INCORRECT', {'LOGIN_LINK': '#' + Settings.LoginModuleHash}), 0);
+							}
+						});
 					}
 				});
 				App.subscribeEvent('SendAjaxRequest::before', function (oParams) {
 					if (oParams.Module === Settings.RegisterModuleName && oParams.Method === 'Register')
 					{
 						oParams.Parameters.MagicLinkHash = sMagicLinkHash;
-					}
-				});
-				Ajax.send('%ModuleName%', 'GetUserName', { 'MagicLinkHash': sMagicLinkHash }, function (oResponse) {
-					if (oResponse.Result)
-					{
-						App.broadcastEvent('ShowWelcomeRegisterText', { 'UserName': oResponse.Result, 'WelcomeText': TextUtils.i18n('%MODULENAME%/LABEL_WELCOME', {'USERNAME': oResponse.Result, 'SITE_NAME': UserSettings.SiteName}) });
 					}
 				});
 			}

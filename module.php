@@ -90,6 +90,8 @@ class MagicLinkWebclientModule extends AApiModule
 	 */
 	public function GetMagicLinkHash($UserId)
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		$mHash = '';
 		$oMin = $this->getMinModuleDecorator();
 		if ($oMin)
@@ -232,6 +234,8 @@ class MagicLinkWebclientModule extends AApiModule
 	 */
 	public function GetUserName($MagicLinkHash)
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		$oUser = $this->getUserByMagicLinkHash($MagicLinkHash);
 		if ($oUser)
 		{

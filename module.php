@@ -177,7 +177,10 @@ class MagicLinkWebclientModule extends AApiModule
 		if (!empty($sMagicLinkHash))
 		{
 			$oUser = $this->getUserByMagicLinkHash($sMagicLinkHash);
-			$aParams['UserId'] = $oUser->iId;
+			if ($oUser)
+			{
+				$aParams['UserId'] = $oUser->iId;
+			}
 		}
 	}
 	

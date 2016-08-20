@@ -76,6 +76,9 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 				Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_LOGGED_IN'), 0);
 			}
 		});
+		App.subscribeEvent('clearAndReloadLocation::before', function (oParams) {
+			oParams.OnlyReload = true;
+		});
 	}
 	
 	if (bAdminUser)

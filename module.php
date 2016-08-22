@@ -62,6 +62,8 @@ class MagicLinkWebclientModule extends AApiModule
 		$this->subscribeEvent('Register::before', array($this, 'onRegisterBefore'));
 		$this->subscribeEvent('Register::after', array($this, 'onRegisterAfter'));
 		
+		$this->subscribeEvent('StandardAuth::CreateUserAccount::after', array($this, 'onCreateUserAccount'));
+
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
 		$this->subscribeEvent('Core::AfterDeleteUser', array($this, 'onAfterDeleteUser'));		
 		
@@ -181,6 +183,23 @@ class MagicLinkWebclientModule extends AApiModule
 		}
 	}
 	
+	public function onCreateUserAccount($aData)
+	{
+		$oMin = $this->getMinModuleDecorator();
+		if (isset($aData['UserId']) && $oMin)
+		{
+			$UserId = $aData['UserId'];
+			$sMinId = implode('|', array($UserId, md5($UserId)));
+			$mHash = $oMin->GetMinById($sMinId);
+			
+			if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
+			{
+				$mHash['Registered'] = true;
+				$oMin->UpdateMinByHash($mHash['__hash__'], $mHash);
+			}			
+		}
+	}
+
 	public function onRegisterBefore(&$aParams)
 	{
 		$sMagicLinkHash = $aParams['MagicLinkHash'];

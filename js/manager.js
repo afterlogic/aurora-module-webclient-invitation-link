@@ -9,6 +9,7 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 		ko = require('knockout'),
 		
 		TextUtils = require('%PathToCoreWebclientModule%/js/utils/Text.js'),
+		Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
 		
 		Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js'),
 		App = require('%PathToCoreWebclientModule%/js/App.js'),
@@ -98,22 +99,26 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 					if ('CEditUserView' === oParams.Name)
 					{
 						oParams.View.magicLink = ko.observable('');
-						oParams.View.id.subscribe(function (iId) {
-							if (iId > 0)
+					}
+				});
+				App.subscribeEvent('CCommonSettingsPaneView::onRoute::after', function (oParams) {
+						var iId = Types.pInt(oParams.Id);
+						if (iId > 0)
+						{
+							oParams.View.magicLink(aMagicLinks[iId] ? aMagicLinks[iId] : '');
+							if (aMagicLinks[iId] !== '')
 							{
-								oParams.View.magicLink(aMagicLinks[iId] ? aMagicLinks[iId] : '');
 								Ajax.send('%ModuleName%', 'GetMagicLinkHash', { 'UserId': iId }, function (oResponse) {
 									var sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : '';
 									oParams.View.magicLink(sLink);
 									aMagicLinks[iId] = sLink;
 								});
 							}
-							else
-							{
-								oParams.View.magicLink('');
-							}
-						});
-					}
+						}
+						else
+						{
+							oParams.View.magicLink('');
+						}
 				});
 			}
 		};

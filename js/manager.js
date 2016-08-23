@@ -23,15 +23,18 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 		bAnonimUser = iUserRole === Enums.UserRole.Anonymous,
 		
 		aMagicLinks = [],
-		aHashArray = Routing.getCurrentHashArray(),
-		sMagicLinkHash = ''
+		fGetMagicLinkHash = function () {
+			var aHashArray = Routing.getCurrentHashArray();
+			if (aHashArray.length >= 2 && aHashArray[0] === Settings.RegisterModuleHash)
+			{
+				return aHashArray[1];
+			}
+			return '';
+		},
+		sMagicLinkHash = fGetMagicLinkHash()
 	;
 	
 	Settings.init(oSettings);
-	if (aHashArray.length >= 2 && aHashArray[0] === Settings.RegisterModuleHash)
-	{
-		sMagicLinkHash = aHashArray[1];
-	}
 
 	if (!bPublic && bAnonimUser)
 	{
@@ -40,6 +43,7 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 				App.subscribeEvent('StandardRegisterFormWebclient::ShowView::after', function (oParams) {
 					if ('CRegisterView' === oParams.Name)
 					{
+						sMagicLinkHash = fGetMagicLinkHash();
 						if (sMagicLinkHash !== '')
 						{
 							$.cookie('MagicLinkHash', sMagicLinkHash, { expires: 30 });
@@ -55,7 +59,8 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 							}
 							else
 							{
-								Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_MAGIC_LINK_INCORRECT', {'LOGIN_LINK': '#' + Settings.LoginModuleHash}), 0);
+								Screens.showError(TextUtils.i18n('%MODULENAME%/REPORT_MAGIC_LINK_INCORRECT'), true);
+								Routing.setHash([Settings.LoginModuleHash]);
 							}
 						});
 					}

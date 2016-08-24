@@ -77,6 +77,8 @@ class MagicLinkWebclientModule extends AApiModule
 	 */
 	public function GetAppData()
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		return array(
 			'RegisterModuleHash' => $this->getRegisterModuleHash(),
 			'RegisterModuleName' => $this->getConfig('RegisterModuleName'),

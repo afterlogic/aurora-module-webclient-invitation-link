@@ -57,8 +57,6 @@ class MagicLinkWebclientModule extends AApiModule
 	 */
 	public function init()
 	{
-		$this->setNonAuthorizedMethods(array('GetUserName'));
-		
 		$this->subscribeEvent('Register::before', array($this, 'onRegisterBefore'));
 		$this->subscribeEvent('Register::after', array($this, 'onRegisterAfter'));
 		

@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (oAppData, iUserRole, bPublic) {
+module.exports = function (oAppData) {
 	require('jquery.cookie');
 	
 	var
@@ -20,8 +20,8 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 		Settings = require('modules/%ModuleName%/js/Settings.js'),
 		oSettings = _.extend({}, oAppData[Settings.ServerModuleName] || {}, oAppData['%ModuleName%'] || {}),
 		
-		bAdminUser = iUserRole === Enums.UserRole.SuperAdmin,
-		bAnonimUser = iUserRole === Enums.UserRole.Anonymous,
+		bAdminUser = App.getUserRole() === Enums.UserRole.SuperAdmin,
+		bAnonimUser = App.getUserRole() === Enums.UserRole.Anonymous,
 		
 		aMagicLinks = [],
 		fGetMagicLinkHash = function () {
@@ -37,7 +37,7 @@ module.exports = function (oAppData, iUserRole, bPublic) {
 	
 	Settings.init(oSettings);
 
-	if (!bPublic && bAnonimUser)
+	if (!App.isPublic() && bAnonimUser)
 	{
 		return {
 			start: function (ModulesManager) {

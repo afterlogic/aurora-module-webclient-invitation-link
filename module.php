@@ -69,7 +69,7 @@ class MagicLinkWebclientModule extends AApiModule
 	}
 	
 	/**
-	 * Returns module settings.
+	 * Obtaines list of module settings for authenticated user.
 	 * 
 	 * @return array
 	 */

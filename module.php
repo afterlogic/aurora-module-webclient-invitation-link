@@ -88,6 +88,16 @@ class MagicLinkWebclientModule extends AApiModule
 	}
 	
 	/**
+	 * Returns id for Min Module
+	 * 
+	 * @return string
+	 */
+	protected function generateMinId($iUserId)
+	{
+		return implode('|', array($this->GetName(), $iUserId, md5($iUserId)));
+	}
+
+	/**
 	 * Returns user with identificator obtained from the magic link hash.
 	 * 
 	 * @param string $sMagicLinkHash Magic link hash.
@@ -167,9 +177,10 @@ class MagicLinkWebclientModule extends AApiModule
 		$oMin = $this->getMinModuleDecorator();
 		if (isset($aData['UserId']) && $oMin)
 		{
-			$UserId = $aData['UserId'];
-			$sMinId = implode('|', array($UserId, md5($UserId)));
-			$mHash = $oMin->GetMinById($sMinId);
+			$iUserId = $aData['UserId'];
+			$mHash = $oMin->GetMinById(
+				$this->generateMinId($iUserId)
+			);
 			
 			if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
 			{
@@ -222,8 +233,9 @@ class MagicLinkWebclientModule extends AApiModule
 		$oMin = $this->getMinModuleDecorator();
 		if ($oMin)
 		{
-			$sMinId = implode('|', array($iUserId, md5($iUserId)));
-			$oMin->DeleteMinByID($sMinId);
+			$oMin->DeleteMinByID(
+				$this->generateMinId($iUserId)
+			);
 		}
 	}
 	/***** private functions *****/
@@ -259,16 +271,16 @@ class MagicLinkWebclientModule extends AApiModule
 		$oMin = $this->getMinModuleDecorator();
 		if ($oMin)
 		{
-			$sMinId = implode('|', array($UserId, md5($UserId)));
+			$sMinId = $this->generateMinId($UserId);
 			$mHash = $oMin->GetMinById($sMinId);
 			
 			if (!$mHash)
 			{
 				$mHash = $oMin->CreateMin(
-						$sMinId,
-						array(
-							'UserId' => $UserId
-						)
+					$sMinId,
+					array(
+						'UserId' => $UserId
+					)
 				);
 			}
 			else

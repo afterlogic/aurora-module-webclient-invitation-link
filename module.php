@@ -43,6 +43,8 @@ class MagicLinkWebclientModule extends AApiModule
 		$this->subscribeEvent('Register::before', array($this, 'onBeforeRegister'));
 		$this->subscribeEvent('Register::after', array($this, 'onAfterRegister'));
 		
+		$this->subscribeEvent('Core::CreateUser::after', array($this, 'onAfterCreateUser'));
+
 		$this->subscribeEvent('StandardAuth::CreateUserAccount::after', array($this, 'onAfterCreateUserAccount'));
 		
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
@@ -227,6 +229,17 @@ class MagicLinkWebclientModule extends AApiModule
 	}
 	
 	/**
+	 * Updates magic link hash in Min module for user with $aData['UserId'] identificator.
+	 * 
+	 * @ignore
+	 * @param array $aData Is passed by reference.
+	 */
+	public function onAfterCreateUser()
+	{
+		var_dump(func_get_args());exit;
+	}	
+	
+	/**
 	 * Deletes hash which are owened by the specified user.
 	 * 
 	 * @ignore
@@ -263,6 +276,40 @@ class MagicLinkWebclientModule extends AApiModule
 	}
 	
 	/**
+	 * Create magic link hash for specified user.
+	 * 
+	 * @param int $UserId User identificator.
+	 * @return string
+	 */
+	public function CreateMagikLinkHash($UserId)
+	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
+		$mHash = '';
+		$oMin = $this->getMinModuleDecorator();
+		if ($oMin)
+		{
+			$sMinId = $this->generateMinId($UserId);
+			$aHashData = $oMin->GetMinById($sMinId);
+			if (!$aHashData)
+			{
+				$mHash = $oMin->CreateMin(
+					$sMinId,
+					array(
+						'UserId' => $UserId
+					)
+				);
+			}
+			else
+			{
+				$mHash = $this->GetMagicLinkHash($UserId);
+			}
+		}
+		
+		return $mHash;
+	}
+	
+	/**
 	 * Returns magic link hash for specified user.
 	 * 
 	 * @param int $UserId User identificator.
@@ -279,16 +326,7 @@ class MagicLinkWebclientModule extends AApiModule
 			$sMinId = $this->generateMinId($UserId);
 			$mHash = $oMin->GetMinById($sMinId);
 			
-			if (!$mHash)
-			{
-				$mHash = $oMin->CreateMin(
-					$sMinId,
-					array(
-						'UserId' => $UserId
-					)
-				);
-			}
-			else
+			if ($mHash)
 			{
 				if (isset($mHash['__hash__']) && !isset($mHash['Registered']))
 				{

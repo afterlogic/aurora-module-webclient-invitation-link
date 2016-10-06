@@ -234,9 +234,13 @@ class MagicLinkWebclientModule extends AApiModule
 	 * @ignore
 	 * @param array $aData Is passed by reference.
 	 */
-	public function onAfterCreateUser()
+	public function onAfterCreateUser($aData)
 	{
-		var_dump(func_get_args());exit;
+		$iUserId = isset($aData['@Result']) && (int) $aData['@Result'] > 0 ? $aData['@Result'] : 0;
+		if (0 < $iUserId)
+		{
+			$this->CreateMagikLinkHash($iUserId);
+		}
 	}	
 	
 	/**

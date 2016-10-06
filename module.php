@@ -18,7 +18,7 @@
  * @package Modules
  */
 
-class MagicLinkWebclientModule extends AApiModule
+class InvitationLinkWebclientModule extends AApiModule
 {
 	protected $oMinModuleDecorator;
 	
@@ -29,7 +29,7 @@ class MagicLinkWebclientModule extends AApiModule
 	protected $aSettingsMap = array(
 		'RegisterModuleName' => array('StandardRegisterFormWebclient', 'string'),
 		'LoginModuleName' => array('StandardLoginFormWebclient', 'string'),
-		'EnableSendMagicLinkViaMail' => array(true, 'bool'),
+		'EnableSendInvitationLinkViaMail' => array(true, 'bool'),
 	);
 	
 	/***** private functions *****/
@@ -50,7 +50,7 @@ class MagicLinkWebclientModule extends AApiModule
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
 		$this->subscribeEvent('Core::AfterDeleteUser', array($this, 'onAfterDeleteUser'));
 		
-		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/MagicLinkView.html', $this->sName);
+		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/InvitationLinkView.html', $this->sName);
 		$this->includeTemplate('StandardAuthWebclient_AccountsSettingsView', 'Edit-Standard-Account-After', 'templates/AccountPasswordHintView.html', $this->sName);
 	}
 	
@@ -104,18 +104,18 @@ class MagicLinkWebclientModule extends AApiModule
 	}
 
 	/**
-	 * Returns user with identificator obtained from the magic link hash.
+	 * Returns user with identificator obtained from the Invitation link hash.
 	 * 
-	 * @param string $sMagicLinkHash Magic link hash.
+	 * @param string $InvitationLinkHash Invitation link hash.
 	 * @return \CUser
 	 */
-	protected function getUserByMagicLinkHash($sMagicLinkHash)
+	protected function getUserByInvitationLinkHash($InvitationLinkHash)
 	{
 		$oUser = null;
 		$oMin = $this->getMinModuleDecorator();
 		if ($oMin)
 		{
-			$mHash = $oMin->GetMinByHash($sMagicLinkHash);
+			$mHash = $oMin->GetMinByHash($InvitationLinkHash);
 			if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
 			{
 				$iUserId = $mHash['UserId'];
@@ -130,17 +130,17 @@ class MagicLinkWebclientModule extends AApiModule
 	}
 	
 	/**
-	 * Writes to $aParams['UserId'] user identificator obtained from magic link hash.
+	 * Writes to $aParams['UserId'] user identificator obtained from Invitation link hash.
 	 * 
 	 * @ignore
 	 * @param array $aParams Is passed by reference.
 	 */
 	public function onBeforeRegister(&$aParams)
 	{
-		$sMagicLinkHash = $aParams['MagicLinkHash'];
-		if (!empty($sMagicLinkHash))
+		$InvitationLinkHash = $aParams['InvitationLinkHash'];
+		if (!empty($InvitationLinkHash))
 		{
-			$oUser = $this->getUserByMagicLinkHash($sMagicLinkHash);
+			$oUser = $this->getUserByInvitationLinkHash($InvitationLinkHash);
 			if ($oUser)
 			{
 				$aParams['UserId'] = $oUser->iId;
@@ -149,31 +149,31 @@ class MagicLinkWebclientModule extends AApiModule
 	}
 	
 	/**
-	 * Updates magic link hash in Min module.
+	 * Updates Invitation link hash in Min module.
 	 * 
 	 * @ignore
 	 * @param array $aParams Is passed by reference.
 	 */
 	public function onAfterRegister(&$aParams)
 	{
-		$sMagicLinkHash = $aParams['MagicLinkHash'];
-		if (!empty($sMagicLinkHash))
+		$InvitationLinkHash = $aParams['InvitationLinkHash'];
+		if (!empty($InvitationLinkHash))
 		{
 			$oMin = $this->getMinModuleDecorator();
 			if ($oMin)
 			{
-				$mHash = $oMin->GetMinByHash($sMagicLinkHash);
+				$mHash = $oMin->GetMinByHash($InvitationLinkHash);
 				if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
 				{
 					$mHash['Registered'] = true;
-					$oMin->UpdateMinByHash($sMagicLinkHash, $mHash);
+					$oMin->UpdateMinByHash($InvitationLinkHash, $mHash);
 				}
 			}
 		}
 	}
 	
 	/**
-	 * Updates magic link hash in Min module for user with $aData['UserId'] identificator.
+	 * Updates Invitation link hash in Min module for user with $aData['UserId'] identificator.
 	 * 
 	 * @ignore
 	 * @param array $aData Is passed by reference.
@@ -197,31 +197,31 @@ class MagicLinkWebclientModule extends AApiModule
 	}
 	
 	/**
-	 * Writes to $oUser variable user object for magic link hash from cookie.
+	 * Writes to $oUser variable user object for Invitation link hash from cookie.
 	 * 
 	 * @ignore
 	 * @param \CUser $oUser
 	 */
 	public function onCreateOAuthAccount(&$oUser)
 	{
-		if (isset($_COOKIE['MagicLinkHash']))
+		if (isset($_COOKIE['InvitationLinkHash']))
 		{
-			$sMagicLinkHash = $_COOKIE['MagicLinkHash'];
+			$InvitationLinkHash = $_COOKIE['InvitationLinkHash'];
 			
-			$oFoundUser = $this->getUserByMagicLinkHash($sMagicLinkHash);
+			$oFoundUser = $this->getUserByInvitationLinkHash($InvitationLinkHash);
 			if (!empty($oFoundUser))
 			{
-				unset($_COOKIE['MagicLinkHash']);
+				unset($_COOKIE['InvitationLinkHash']);
 				$oUser = $oFoundUser;
 				
 				$oMin = $this->getMinModuleDecorator();
 				if ($oMin)
 				{
-					$mHash = $oMin->GetMinByHash($sMagicLinkHash);
+					$mHash = $oMin->GetMinByHash($InvitationLinkHash);
 					if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
 					{
 						$mHash['Registered'] = true;
-						$oMin->UpdateMinByHash($sMagicLinkHash, $mHash);
+						$oMin->UpdateMinByHash($InvitationLinkHash, $mHash);
 					}
 				}
 			}
@@ -229,7 +229,7 @@ class MagicLinkWebclientModule extends AApiModule
 	}
 	
 	/**
-	 * Updates magic link hash in Min module for user with $aData['UserId'] identificator.
+	 * Updates Invitation link hash in Min module for user with $aData['UserId'] identificator.
 	 * 
 	 * @ignore
 	 * @param array $aData Is passed by reference.
@@ -275,12 +275,12 @@ class MagicLinkWebclientModule extends AApiModule
 			'RegisterModuleHash' => $this->getRegisterModuleHash(),
 			'RegisterModuleName' => $this->getConfig('RegisterModuleName'),
 			'LoginModuleHash' => $this->getLoginModuleHash(),
-			'EnableSendMagicLinkViaMail' => $this->getConfig('EnableSendMagicLinkViaMail'),
+			'EnableSendInvitationLinkViaMail' => $this->getConfig('EnableSendInvitationLinkViaMail'),
 		);
 	}
 	
 	/**
-	 * Create magic link hash for specified user.
+	 * Create Invitation link hash for specified user.
 	 * 
 	 * @param int $UserId User identificator.
 	 * @return string
@@ -306,7 +306,7 @@ class MagicLinkWebclientModule extends AApiModule
 			}
 			else
 			{
-				$mHash = $this->GetMagicLinkHash($UserId);
+				$mHash = $this->GetInvitationLinkHash($UserId);
 			}
 		}
 		
@@ -314,12 +314,12 @@ class MagicLinkWebclientModule extends AApiModule
 	}
 	
 	/**
-	 * Returns magic link hash for specified user.
+	 * Returns Invitation link hash for specified user.
 	 * 
 	 * @param int $UserId User identificator.
 	 * @return string
 	 */
-	public function GetMagicLinkHash($UserId)
+	public function GetInvitationLinkHash($UserId)
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
@@ -353,16 +353,16 @@ class MagicLinkWebclientModule extends AApiModule
 	}
 	
 	/**
-	 * Returns public id of user obtained from magic link hash.
+	 * Returns public id of user obtained from Invitation link hash.
 	 * 
-	 * @param string $MagicLinkHash Magic link hash with information about user and its registration status.
+	 * @param string $InvitationLinkHash Invitation link hash with information about user and its registration status.
 	 * @return string
 	 */
-	public function GetUserPublicId($MagicLinkHash)
+	public function GetUserPublicId($InvitationLinkHash)
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
-		$oUser = $this->getUserByMagicLinkHash($MagicLinkHash);
+		$oUser = $this->getUserByInvitationLinkHash($InvitationLinkHash);
 		if ($oUser)
 		{
 			return $oUser->PublicId;

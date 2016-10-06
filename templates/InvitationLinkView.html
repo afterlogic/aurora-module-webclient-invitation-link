@@ -1,15 +1,15 @@
-<!-- ko if: magicLink() !== '' -->
+<!-- ko if: invitationLink() !== '' -->
 <div class="row">
 	<span class="label" data-bind="i18n: {'key': '%MODULENAME%/LABEL_LINK'}"></span>
 	<span class="value">
-		<input class="input disabled enlarged" readonly data-bind="value: magicLink, onFocusSelect: true" />
+		<input class="input disabled enlarged" readonly data-bind="value: invitationLink, onFocusSelect: true" />
 	</span>
 </div>
 <div class="row hint">
 	<span class="label"></span>
 	<span class="value" data-bind="i18n: {'key': '%MODULENAME%/LABEL_HINT'}"></span>
 </div>
-<div class="row buttons" data-bind="visible: bEnableSendMagicLinkViaMail" style="text-align: left;">
+<div class="row buttons" data-bind="visible: bEnableSendInvitationLinkViaMail" style="text-align: left;">
 	<span class="label"></span>
 	<span class="button" data-bind="i18n: {'key': '%MODULENAME%/ACTION_RESEND'}"></span>
 </div>

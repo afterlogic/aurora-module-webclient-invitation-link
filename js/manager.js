@@ -23,8 +23,8 @@ module.exports = function (oAppData) {
 		bAdminUser = App.getUserRole() === Enums.UserRole.SuperAdmin,
 		bAnonimUser = App.getUserRole() === Enums.UserRole.Anonymous,
 		
-		aMagicLinks = [],
-		fGetMagicLinkHash = function () {
+		aInvitationLinks = [],
+		fGetInvitationLinkHash = function () {
 			var aHashArray = Routing.getCurrentHashArray();
 			if (aHashArray.length >= 2 && aHashArray[0] === Settings.RegisterModuleHash)
 			{
@@ -32,7 +32,7 @@ module.exports = function (oAppData) {
 			}
 			return '';
 		},
-		sMagicLinkHash = fGetMagicLinkHash()
+		sInvitationLinkHash = fGetInvitationLinkHash()
 	;
 	
 	Settings.init(oSettings);
@@ -44,23 +44,23 @@ module.exports = function (oAppData) {
 				App.subscribeEvent('StandardRegisterFormWebclient::ShowView::after', function (oParams) {
 					if ('CRegisterView' === oParams.Name)
 					{
-						sMagicLinkHash = fGetMagicLinkHash();
-						if (sMagicLinkHash !== '')
+						sInvitationLinkHash = fGetInvitationLinkHash();
+						if (sInvitationLinkHash !== '')
 						{
-							$.cookie('MagicLinkHash', sMagicLinkHash, { expires: 30 });
+							$.cookie('InvitationLinkHash', sInvitationLinkHash, { expires: 30 });
 						}
 						else
 						{
-							$.removeCookie('MagicLinkHash');
+							$.removeCookie('InvitationLinkHash');
 						}
-						Ajax.send('%ModuleName%', 'GetUserPublicId', { 'MagicLinkHash': sMagicLinkHash }, function (oResponse) {
+						Ajax.send('%ModuleName%', 'GetUserPublicId', { 'InvitationLinkHash': sInvitationLinkHash }, function (oResponse) {
 							if (oResponse.Result)
 							{
 								App.broadcastEvent('ShowWelcomeRegisterText', { 'UserName': oResponse.Result, 'WelcomeText': TextUtils.i18n('%MODULENAME%/LABEL_WELCOME', {'USERNAME': oResponse.Result, 'SITE_NAME': UserSettings.SiteName}) });
 							}
 							else
 							{
-								Screens.showError(TextUtils.i18n('%MODULENAME%/REPORT_MAGIC_LINK_INCORRECT'), true);
+								Screens.showError(TextUtils.i18n('%MODULENAME%/REPORT_INVITATION_LINK_INCORRECT'), true);
 								Routing.setHash([Settings.LoginModuleHash]);
 							}
 						});
@@ -69,18 +69,18 @@ module.exports = function (oAppData) {
 				App.subscribeEvent('SendAjaxRequest::before', function (oParams) {
 					if (oParams.Module === Settings.RegisterModuleName && oParams.Method === 'Register')
 					{
-						oParams.Parameters.MagicLinkHash = sMagicLinkHash;
+						oParams.Parameters.InvitationLinkHash = sInvitationLinkHash;
 					}
 				});
 			}
 		};
 	}
 	
-	$.removeCookie('MagicLinkHash');
+	$.removeCookie('InvitationLinkHash');
 	
-	if (sMagicLinkHash !== '')
+	if (sInvitationLinkHash !== '')
 	{
-		Ajax.send('%ModuleName%', 'GetUserPublicId', { 'MagicLinkHash': sMagicLinkHash }, function (oResponse) {
+		Ajax.send('%ModuleName%', 'GetUserPublicId', { 'InvitationLinkHash': sInvitationLinkHash }, function (oResponse) {
 			if (oResponse.Result)
 			{
 				Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_LOGGED_IN'), 0);
@@ -98,27 +98,27 @@ module.exports = function (oAppData) {
 				App.subscribeEvent('AdminPanelWebclient::ConstructView::after', function (oParams) {
 					if ('CEditUserView' === oParams.Name)
 					{
-						oParams.View.magicLink = ko.observable('');
-						oParams.View.bEnableSendMagicLinkViaMail = Settings.EnableSendMagicLinkViaMail;
+						oParams.View.invitationLink = ko.observable('');
+						oParams.View.bEnableSendInvitationLinkViaMail = Settings.EnableSendInvitationLinkViaMail;
 					}
 				});
 				App.subscribeEvent('CCommonSettingsPaneView::onRoute::after', function (oParams) {
 						var iId = Types.pInt(oParams.Id);
 						if (iId > 0)
 						{
-							oParams.View.magicLink(aMagicLinks[iId] ? aMagicLinks[iId] : '');
-							if (aMagicLinks[iId] !== '')
+							oParams.View.invitationLink(aInvitationLinks[iId] ? aInvitationLinks[iId] : '');
+							if (aInvitationLinks[iId] !== '')
 							{
-								Ajax.send('%ModuleName%', 'GetMagicLinkHash', { 'UserId': iId }, function (oResponse) {
+								Ajax.send('%ModuleName%', 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse) {
 									var sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : '';
-									oParams.View.magicLink(sLink);
-									aMagicLinks[iId] = sLink;
+									oParams.View.invitationLink(sLink);
+									aInvitationLinks[iId] = sLink;
 								});
 							}
 						}
 						else
 						{
-							oParams.View.magicLink('');
+							oParams.View.invitationLink('');
 						}
 				});
 			}

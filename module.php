@@ -239,7 +239,8 @@ class InvitationLinkWebclientModule extends AApiModule
 		$iUserId = isset($aData['@Result']) && (int) $aData['@Result'] > 0 ? $aData['@Result'] : 0;
 		if (0 < $iUserId)
 		{
-			$this->CreateMagikLinkHash($iUserId);
+			$sHash = $this->CreateMagikLinkHash($iUserId);
+			$this->SendNotification($aData['PublicId'], $sHash);
 		}
 	}	
 	
@@ -311,6 +312,37 @@ class InvitationLinkWebclientModule extends AApiModule
 		}
 		
 		return $mHash;
+	}
+	
+	/**
+	 * 
+	 * @param type $UserId
+	 */
+	public function SendNotification($sEmail, $sHash)
+	{
+		$headers = 'From: notices@afterlogic.com' . "\r\n" .
+			'Reply-To: notices@afterlogic.com' . "\r\n" .
+			'MIME-Version: 1.0' . "\r\n" .
+			'Content-type: text/html; charset=utf-8' . "\r\n" .				
+			'X-Mailer: PHP/' . phpversion();
+		$oSettings =& CApi::GetSettings();
+		$sSiteName = $oSettings->GetConf('SiteName');
+		$sBody = file_get_contents($this->GetPath().'/templates/InvitationMail.html');
+		if (is_string($sBody)) 
+		{
+			$sBody = strtr($sBody, array(
+				'{{INVITATION_URL}}' => rtrim($this->oHttp->GetFullUrl(), '\\/ ') . "/index.php#register/" . $sHash,
+				'{{SITE_NAME}}' => $sSiteName
+			));
+		}
+		$sSubject = "You're invited to join " . $sSiteName;
+
+		mail(
+			$sEmail, 
+			$sSubject, 
+			$sBody,
+			$headers
+		);
 	}
 	
 	/**

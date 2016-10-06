@@ -29,6 +29,7 @@ class MagicLinkWebclientModule extends AApiModule
 	protected $aSettingsMap = array(
 		'RegisterModuleName' => array('StandardRegisterFormWebclient', 'string'),
 		'LoginModuleName' => array('StandardLoginFormWebclient', 'string'),
+		'EnableSendMagicLinkViaMail' => array(true, 'bool'),
 	);
 	
 	/***** private functions *****/
@@ -48,6 +49,7 @@ class MagicLinkWebclientModule extends AApiModule
 		$this->subscribeEvent('Core::AfterDeleteUser', array($this, 'onAfterDeleteUser'));
 		
 		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/MagicLinkView.html', $this->sName);
+		$this->includeTemplate('StandardAuthWebclient_AccountsSettingsView', 'Edit-Standard-Account-After', 'templates/AccountPasswordHintView.html', $this->sName);
 	}
 	
 	/**
@@ -256,6 +258,7 @@ class MagicLinkWebclientModule extends AApiModule
 			'RegisterModuleHash' => $this->getRegisterModuleHash(),
 			'RegisterModuleName' => $this->getConfig('RegisterModuleName'),
 			'LoginModuleHash' => $this->getLoginModuleHash(),
+			'EnableSendMagicLinkViaMail' => $this->getConfig('EnableSendMagicLinkViaMail'),
 		);
 	}
 	
@@ -308,19 +311,19 @@ class MagicLinkWebclientModule extends AApiModule
 	}
 	
 	/**
-	 * Returns name of user obtained from magic link hash.
+	 * Returns public id of user obtained from magic link hash.
 	 * 
 	 * @param string $MagicLinkHash Magic link hash with information about user and its registration status.
 	 * @return string
 	 */
-	public function GetUserName($MagicLinkHash)
+	public function GetUserPublicId($MagicLinkHash)
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		$oUser = $this->getUserByMagicLinkHash($MagicLinkHash);
 		if ($oUser)
 		{
-			return $oUser->Name;
+			return $oUser->PublicId;
 		}
 		return '';
 	}

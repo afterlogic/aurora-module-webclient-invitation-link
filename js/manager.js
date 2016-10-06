@@ -53,7 +53,7 @@ module.exports = function (oAppData) {
 						{
 							$.removeCookie('MagicLinkHash');
 						}
-						Ajax.send('%ModuleName%', 'GetUserName', { 'MagicLinkHash': sMagicLinkHash }, function (oResponse) {
+						Ajax.send('%ModuleName%', 'GetUserPublicId', { 'MagicLinkHash': sMagicLinkHash }, function (oResponse) {
 							if (oResponse.Result)
 							{
 								App.broadcastEvent('ShowWelcomeRegisterText', { 'UserName': oResponse.Result, 'WelcomeText': TextUtils.i18n('%MODULENAME%/LABEL_WELCOME', {'USERNAME': oResponse.Result, 'SITE_NAME': UserSettings.SiteName}) });
@@ -80,7 +80,7 @@ module.exports = function (oAppData) {
 	
 	if (sMagicLinkHash !== '')
 	{
-		Ajax.send('%ModuleName%', 'GetUserName', { 'MagicLinkHash': sMagicLinkHash }, function (oResponse) {
+		Ajax.send('%ModuleName%', 'GetUserPublicId', { 'MagicLinkHash': sMagicLinkHash }, function (oResponse) {
 			if (oResponse.Result)
 			{
 				Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_LOGGED_IN'), 0);
@@ -99,6 +99,7 @@ module.exports = function (oAppData) {
 					if ('CEditUserView' === oParams.Name)
 					{
 						oParams.View.magicLink = ko.observable('');
+						oParams.View.bEnableSendMagicLinkViaMail = Settings.EnableSendMagicLinkViaMail;
 					}
 				});
 				App.subscribeEvent('CCommonSettingsPaneView::onRoute::after', function (oParams) {

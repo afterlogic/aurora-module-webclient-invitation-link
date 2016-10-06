@@ -9,6 +9,7 @@ module.exports = {
 	RegisterModuleName: 'StandardRegisterFormWebclient',
 	RegisterModuleHash: 'register',
 	LoginModuleHash: 'login',
+	EnableSendMagicLinkViaMail: true,
 	
 	/**
 	 * Initializes settings from AppData section.
@@ -21,6 +22,7 @@ module.exports = {
 			this.RegisterModuleName = Types.pString(oAppDataSection.RegisterModuleName);
 			this.RegisterModuleHash = Types.pString(oAppDataSection.RegisterModuleHash);
 			this.LoginModuleHash = Types.pString(oAppDataSection.LoginModuleHash);
+			this.EnableSendMagicLinkViaMail = !!oAppDataSection.EnableSendMagicLinkViaMail;
 		}
 	}
 };

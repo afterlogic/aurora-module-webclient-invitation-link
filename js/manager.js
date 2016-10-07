@@ -23,7 +23,6 @@ module.exports = function (oAppData) {
 		bAdminUser = App.getUserRole() === Enums.UserRole.SuperAdmin,
 		bAnonimUser = App.getUserRole() === Enums.UserRole.Anonymous,
 		
-		aInvitationLinks = [],
 		fGetInvitationLinkHash = function () {
 			var aHashArray = Routing.getCurrentHashArray();
 			if (aHashArray.length >= 2 && aHashArray[0] === Settings.RegisterModuleHash)
@@ -95,31 +94,49 @@ module.exports = function (oAppData) {
 	{
 		return {
 			start: function (ModulesManager) {
+				var
+					iId = 0,
+					aInvitationLinks = {},
+					aInvitationHashes = {}
+				;
 				App.subscribeEvent('AdminPanelWebclient::ConstructView::after', function (oParams) {
 					if ('CEditUserView' === oParams.Name)
 					{
 						oParams.View.invitationLink = ko.observable('');
 						oParams.View.bEnableSendInvitationLinkViaMail = Settings.EnableSendInvitationLinkViaMail;
+						oParams.View.resendInvitationLink = function () {
+							Ajax.send('%ModuleName%', 'SendNotification', { 'Email': oParams.View.publicId(), 'Hash': aInvitationHashes[iId] }, function (oResponse) {
+								if (oResponse.Result)
+								{
+									Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_SEND_LINK'));
+								}
+								else
+								{
+									Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_SEND_LINK'));
+								}
+							});
+						};
 					}
 				});
 				App.subscribeEvent('CCommonSettingsPaneView::onRoute::after', function (oParams) {
-						var iId = Types.pInt(oParams.Id);
-						if (iId > 0)
+					iId = Types.pInt(oParams.Id);
+					if (iId > 0)
+					{
+						oParams.View.invitationLink(aInvitationLinks[iId] ? aInvitationLinks[iId] : '');
+						if (aInvitationLinks[iId] !== '')
 						{
-							oParams.View.invitationLink(aInvitationLinks[iId] ? aInvitationLinks[iId] : '');
-							if (aInvitationLinks[iId] !== '')
-							{
-								Ajax.send('%ModuleName%', 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse) {
-									var sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : '';
-									oParams.View.invitationLink(sLink);
-									aInvitationLinks[iId] = sLink;
-								});
-							}
+							Ajax.send('%ModuleName%', 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse) {
+								var sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : '';
+								oParams.View.invitationLink(sLink);
+								aInvitationLinks[iId] = sLink;
+								aInvitationHashes[iId] = oResponse.Result;
+							});
 						}
-						else
-						{
-							oParams.View.invitationLink('');
-						}
+					}
+					else
+					{
+						oParams.View.invitationLink('');
+					}
 				});
 			}
 		};

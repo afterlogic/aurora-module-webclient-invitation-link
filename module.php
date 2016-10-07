@@ -316,9 +316,10 @@ class InvitationLinkWebclientModule extends AApiModule
 	
 	/**
 	 * 
-	 * @param type $UserId
+	 * @param string $Email
+	 * @param string $Hash
 	 */
-	public function SendNotification($sEmail, $sHash)
+	public function SendNotification($Email, $Hash)
 	{
 		$headers = 'From: notices@afterlogic.com' . "\r\n" .
 			'Reply-To: notices@afterlogic.com' . "\r\n" .
@@ -331,14 +332,14 @@ class InvitationLinkWebclientModule extends AApiModule
 		if (is_string($sBody)) 
 		{
 			$sBody = strtr($sBody, array(
-				'{{INVITATION_URL}}' => rtrim($this->oHttp->GetFullUrl(), '\\/ ') . "/index.php#register/" . $sHash,
+				'{{INVITATION_URL}}' => rtrim($this->oHttp->GetFullUrl(), '\\/ ') . "/index.php#register/" . $Hash,
 				'{{SITE_NAME}}' => $sSiteName
 			));
 		}
 		$sSubject = "You're invited to join " . $sSiteName;
 
 		mail(
-			$sEmail, 
+			$Email, 
 			$sSubject, 
 			$sBody,
 			$headers

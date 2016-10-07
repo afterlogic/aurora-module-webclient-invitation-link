@@ -30,6 +30,14 @@ class InvitationLinkWebclientModule extends AApiModule
 		'RegisterModuleName' => array('StandardRegisterFormWebclient', 'string'),
 		'LoginModuleName' => array('StandardLoginFormWebclient', 'string'),
 		'EnableSendInvitationLinkViaMail' => array(true, 'bool'),
+		
+		'NotificationType' => array('mail', 'string'),
+		'NotificationEmail' => array('mail@localhost', 'string'),
+		'NotificationHost' => array('localhost', 'string'),
+		'NotificationPort' => array('25', 'string'),
+		'NotificationUseAuth' => array(false, 'bool'),
+		'NotificationLogin' => array('', 'string'),
+		'NotificationPassword' => array('', 'string')
 	);
 	
 	/***** private functions *****/
@@ -321,11 +329,6 @@ class InvitationLinkWebclientModule extends AApiModule
 	 */
 	public function SendNotification($Email, $Hash)
 	{
-		$headers = 'From: notices@afterlogic.com' . "\r\n" .
-			'Reply-To: notices@afterlogic.com' . "\r\n" .
-			'MIME-Version: 1.0' . "\r\n" .
-			'Content-type: text/html; charset=utf-8' . "\r\n" .				
-			'X-Mailer: PHP/' . phpversion();
 		$oSettings =& CApi::GetSettings();
 		$sSiteName = $oSettings->GetConf('SiteName');
 		$sBody = file_get_contents($this->GetPath().'/templates/InvitationMail.html');
@@ -337,13 +340,38 @@ class InvitationLinkWebclientModule extends AApiModule
 			));
 		}
 		$sSubject = "You're invited to join " . $sSiteName;
+		$sFrom = $this->getConfig('NotificationEmail', '');
+		
+		$oMail = new PHPMailer();
+		
+		$sType = $this->getConfig('NotificationType', 'mail');
+		if (strtolower($sType) === 'mail')
+		{
+			$oMail->isMail();                                      
+		}
+		else if (strtolower($sType) === 'smtp')
+		{
+			$oMail->isSMTP();                                      
+			$oMail->Host = $this->getConfig('NotificationHost', '');
+			$oMail->Port = 25;                                    
+			$oMail->SMTPAuth = (bool) $this->getConfig('NotificationUseAuth', false);
+			if ($oMail->SMTPAuth)
+			{
+				$oMail->Username = $this->getConfig('NotificationLogin', '');
+				$oMail->Password = $this->getConfig('NotificationPassword', '');
+			}
+		}
+		
+		$oMail->setFrom($sFrom);
+		$oMail->addAddress($Email);
+		$oMail->addReplyTo($sFrom, $sSiteName);
 
-		mail(
-			$Email, 
-			$sSubject, 
-			$sBody,
-			$headers
-		);
+		$oMail->isHTML(true);                                  // Set email format to HTML
+
+		$oMail->Subject = $sSubject;
+		$oMail->Body    = $sBody;
+
+		return $oMail->send();
 	}
 	
 	/**

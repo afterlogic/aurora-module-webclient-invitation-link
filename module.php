@@ -51,7 +51,7 @@ class InvitationLinkWebclientModule extends AApiModule
 		$this->subscribeEvent('Register::before', array($this, 'onBeforeRegister'));
 		$this->subscribeEvent('Register::after', array($this, 'onAfterRegister'));
 		
-		$this->subscribeEvent('Core::CreateUser::after', array($this, 'onAfterCreateUser'));
+		$this->subscribeEvent('AdminPanelWebclientModule::CreateUser::after', array($this, 'onAfterCreateUser'));
 
 		$this->subscribeEvent('StandardAuth::CreateUserAccount::after', array($this, 'onAfterCreateUserAccount'));
 		
@@ -247,7 +247,7 @@ class InvitationLinkWebclientModule extends AApiModule
 		$iUserId = isset($aData['@Result']) && (int) $aData['@Result'] > 0 ? $aData['@Result'] : 0;
 		if (0 < $iUserId)
 		{
-			$sHash = $this->CreateMagikLinkHash($iUserId);
+			$sHash = $this->CreateInvitationLinkHash($iUserId);
 			$this->SendNotification($aData['PublicId'], $sHash);
 		}
 	}	
@@ -294,7 +294,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	 * @param int $UserId User identificator.
 	 * @return string
 	 */
-	public function CreateMagikLinkHash($UserId)
+	public function CreateInvitationLinkHash($UserId)
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		

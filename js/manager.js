@@ -125,7 +125,7 @@ module.exports = function (oAppData) {
 						oParams.View.invitationLink(aInvitationLinks[iId] ? aInvitationLinks[iId] : '');
 						if (aInvitationLinks[iId] !== '')
 						{
-							Ajax.send('%ModuleName%', 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse) {
+							Ajax.send(Settings.ServerModuleName, 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse) {
 								var sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : '';
 								oParams.View.invitationLink(sLink);
 								aInvitationLinks[iId] = sLink;
@@ -136,6 +136,15 @@ module.exports = function (oAppData) {
 					else
 					{
 						oParams.View.invitationLink('');
+					}
+				});
+				App.subscribeEvent('ReceiveAjaxResponse::after', function (oParams) {
+					var oResponse = _.find(oParams.Responses, function (oRsp) {
+						return oRsp.Module === Settings.ServerModuleName && oRsp.Method === 'onAfterCreateUser';
+					});
+					if (oResponse && !oResponse.Result)
+					{
+						Screens.showReport(TextUtils.i18n('%MODULENAME%/ERROR_AUTO_SEND_LINK'));
 					}
 				});
 			}

@@ -242,13 +242,17 @@ class InvitationLinkWebclientModule extends AApiModule
 	 * @ignore
 	 * @param array $aData Is passed by reference.
 	 */
-	public function onAfterCreateUser($aData)
+	public function onAfterCreateUser($aData, &$mResult)
 	{
-		$iUserId = isset($aData['@Result']) && (int) $aData['@Result'] > 0 ? $aData['@Result'] : 0;
+		$iUserId = isset($mResult) && (int) $mResult > 0 ? $mResult : 0;
 		if (0 < $iUserId)
 		{
+			$mResult = false;
 			$sHash = $this->CreateInvitationLinkHash($iUserId);
-			$this->SendNotification($aData['PublicId'], $sHash);
+			if (!empty($sHash))
+			{
+				$mResult = $this->SendNotification($aData['PublicId'], $sHash);
+			}
 		}
 	}	
 	
@@ -260,13 +264,9 @@ class InvitationLinkWebclientModule extends AApiModule
 	 */
 	public function onAfterDeleteUser($iUserId)
 	{
-		$oMin = $this->getMinModuleDecorator();
-		if ($oMin)
-		{
-			$oMin->DeleteMinByID(
-				$this->generateMinId($iUserId)
-			);
-		}
+		$this->getMinModuleDecorator()->DeleteMinByID(
+			$this->generateMinId($iUserId)
+		);
 	}
 	/***** private functions *****/
 	

@@ -51,7 +51,7 @@ class InvitationLinkWebclientModule extends AApiModule
 		$this->subscribeEvent('Register::before', array($this, 'onBeforeRegister'));
 		$this->subscribeEvent('Register::after', array($this, 'onAfterRegister'));
 		
-		$this->subscribeEvent('AdminPanelWebclientModule::CreateUser::after', array($this, 'onAfterCreateUser'));
+		$this->subscribeEvent('AdminPanelWebclient::CreateUser::after', array($this, 'onAfterCreateUser'));
 
 		$this->subscribeEvent('StandardAuth::CreateUserAccount::after', array($this, 'onAfterCreateUserAccount'));
 		

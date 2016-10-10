@@ -360,6 +360,13 @@ class InvitationLinkWebclientModule extends AApiModule
 				$oMail->Username = $this->getConfig('NotificationLogin', '');
 				$oMail->Password = $this->getConfig('NotificationPassword', '');
 			}
+			$oMail->SMTPOptions = array(
+				'ssl' => array(
+					'verify_peer' => false,
+					'verify_peer_name' => false,
+					'allow_self_signed' => true
+				)
+			);			
 		}
 		
 		$oMail->setFrom($sFrom);

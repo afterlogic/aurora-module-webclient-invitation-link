@@ -85,7 +85,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	protected function getRegisterModuleHash()
 	{
 		$oRegisterModuleDecorator = \CApi::GetModuleDecorator($this->getConfig('RegisterModuleName'));
-		$oRegisterModuleSettings = $oRegisterModuleDecorator->GetAppData();
+		$oRegisterModuleSettings = $oRegisterModuleDecorator->GetSettings();
 		return $oRegisterModuleSettings['HashModuleName'];
 	}
 	
@@ -97,7 +97,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	protected function getLoginModuleHash()
 	{
 		$oLoginModuleDecorator = \CApi::GetModuleDecorator($this->getConfig('LoginModuleName'));
-		$oLoginModuleSettings = $oLoginModuleDecorator->GetAppData();
+		$oLoginModuleSettings = $oLoginModuleDecorator->GetSettings();
 		return $oLoginModuleSettings['HashModuleName'];
 	}
 	
@@ -276,7 +276,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	 * 
 	 * @return array
 	 */
-	public function GetAppData()
+	public function GetSettings()
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		

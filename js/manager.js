@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function (oAppData) {
-	require('jquery.cookie');
+	require('%PathToCoreWebclientModule%/js/vendors/jquery.cookie.js');
 	
 	var
 		_ = require('underscore'),

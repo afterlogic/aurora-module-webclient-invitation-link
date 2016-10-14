@@ -144,14 +144,14 @@ class InvitationLinkWebclientModule extends AApiModule
 	 * @ignore
 	 * @param array $aParams Is passed by reference.
 	 */
-	public function onBeforeRegister($Login, $Password, $InvitationLinkHash, &$mResult)
+	public function onBeforeRegister(&$aArgs, &$mResult)
 	{
-		if (!empty($InvitationLinkHash))
+		if (!empty($aArgs['InvitationLinkHash']))
 		{
-			$oUser = $this->getUserByInvitationLinkHash($InvitationLinkHash);
+			$oUser = $this->getUserByInvitationLinkHash($aArgs['InvitationLinkHash']);
 			if ($oUser)
 			{
-				$mResult['UserId'] = $oUser->iId;
+				$aArgs['UserId'] = $oUser->iId;
 			}
 		}
 	}
@@ -162,18 +162,18 @@ class InvitationLinkWebclientModule extends AApiModule
 	 * @ignore
 	 * @param array $aParams Is passed by reference.
 	 */
-	public function onAfterRegister($Login, $Password, $InvitationLinkHash, &$mResult)
+	public function onAfterRegister($aArgs, &$mResult)
 	{
-		if (!empty($InvitationLinkHash))
+		if (!empty($aArgs['InvitationLinkHash']))
 		{
 			$oMin = $this->getMinModuleDecorator();
 			if ($oMin)
 			{
-				$mHash = $oMin->GetMinByHash($InvitationLinkHash);
+				$mHash = $oMin->GetMinByHash($aArgs['InvitationLinkHash']);
 				if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
 				{
 					$mHash['Registered'] = true;
-					$oMin->UpdateMinByHash($InvitationLinkHash, $mHash);
+					$oMin->UpdateMinByHash($aArgs['InvitationLinkHash'], $mHash);
 				}
 			}
 		}
@@ -185,13 +185,13 @@ class InvitationLinkWebclientModule extends AApiModule
 	 * @ignore
 	 * @param array $aData Is passed by reference.
 	 */
-	public function onAfterCreateUserAccount($UserId, $Login, $Password, &$mResult)
+	public function onAfterCreateUserAccount($aArgs, &$mResult)
 	{
 		$oMin = $this->getMinModuleDecorator();
-		if (isset($UserId) && $oMin)
+		if (isset($aArgs['UserId']) && $oMin)
 		{
 			$mHash = $oMin->GetMinById(
-				$this->generateMinId($UserId)
+				$this->generateMinId($aArgs['UserId'])
 			);
 			
 			if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
@@ -240,7 +240,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	 * @ignore
 	 * @param array $aData Is passed by reference.
 	 */
-	public function onAfterCreateUser($TenantId, $PublicId, $Role, $UserId, &$mResult)
+	public function onAfterCreateUser($aArgs, &$mResult)
 	{
 		$iUserId = isset($mResult) && (int) $mResult > 0 ? $mResult : 0;
 		if (0 < $iUserId)
@@ -249,20 +249,21 @@ class InvitationLinkWebclientModule extends AApiModule
 			$mResult  = $sHash;
 			if (!empty($sHash))
 			{
+				$aEventArgs = array(
+					'PublicId' => $aArgs['PublicId'],
+					'Hash' => $sHash
+				);
 				$this->broadcastEvent(
 					'CreateInvitationLinkHash', 
-					array(
-						'PublicId' => $PublicId,
-						'Hash' => $sHash
-					)
+					$aEventArgs
 				);
 			}
 		}
 	}	
 	
-	public function onCreateInvitationLinkHash($PublicId, $Hash, &$mResult)
+	public function onCreateInvitationLinkHash($aArgs, &$mResult)
 	{
-		$mResult = $this->SendNotification($PublicId, $Hash);
+		$mResult = $this->SendNotification($aArgs['PublicId'], $aArgs['Hash']);
 	}
 	
 	/**

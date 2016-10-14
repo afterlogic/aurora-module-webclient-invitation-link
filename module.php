@@ -272,7 +272,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	 * @ignore
 	 * @param int $iUserId User Identificator.
 	 */
-	public function onAfterDeleteUser($iUserId)
+	public function onAfterDeleteUser($aArgs, &$iUserId)
 	{
 		$this->getMinModuleDecorator()->DeleteMinByID(
 			$this->generateMinId($iUserId)

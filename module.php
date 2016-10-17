@@ -60,7 +60,12 @@ class InvitationLinkWebclientModule extends AApiModule
 		$this->subscribeEvent('Core::AfterDeleteUser', array($this, 'onAfterDeleteUser'));
 		
 		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/InvitationLinkView.html', $this->sName);
-		$this->includeTemplate('StandardAuthWebclient_AccountsSettingsView', 'Edit-Standard-Account-After', 'templates/AccountPasswordHintView.html', $this->sName);
+		
+		$oUser = \CApi::getAuthenticatedUser();
+		if (!empty($oUser) && $oUser->Role === \EUserRole::SuperAdmin)
+		{
+			$this->includeTemplate('StandardAuthWebclient_AccountsSettingsView', 'Edit-Standard-Account-After', 'templates/AccountPasswordHintView.html', $this->sName);
+		}
 	}
 	
 	/**

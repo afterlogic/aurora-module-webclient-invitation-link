@@ -99,6 +99,25 @@ module.exports = function (oAppData) {
 					aInvitationLinks = {},
 					aInvitationHashes = {}
 				;
+				App.subscribeEvent('StandardAuthWebclient::ConstructView::after', function (oParams) {
+					if (oParams.Name === 'CAccountsSettingsView')
+					{
+						oParams.View.showPasswordRevokesInvitationHint = ko.observable(false);
+					}
+				});
+				App.subscribeEvent('CAccountsSettingsView::onRoute::after', function (oParams) {
+					iId = oParams.View.iUserId;
+					oParams.View.showPasswordRevokesInvitationHint(!!aInvitationHashes[iId]);
+					if (!aInvitationLinks[iId])
+					{
+						Ajax.send(Settings.ServerModuleName, 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse) {
+							var sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : '';
+							aInvitationLinks[iId] = sLink;
+							aInvitationHashes[iId] = oResponse.Result;
+							oParams.View.showPasswordRevokesInvitationHint(!!aInvitationHashes[iId]);
+						});
+					}
+				});
 				App.subscribeEvent('AdminPanelWebclient::ConstructView::after', function (oParams) {
 					if ('CEditUserView' === oParams.Name)
 					{
@@ -123,7 +142,7 @@ module.exports = function (oAppData) {
 					if (iId > 0)
 					{
 						oParams.View.invitationLink(aInvitationLinks[iId] ? aInvitationLinks[iId] : '');
-						if (aInvitationLinks[iId] !== '')
+						if (!aInvitationLinks[iId])
 						{
 							Ajax.send(Settings.ServerModuleName, 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse) {
 								var sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : '';

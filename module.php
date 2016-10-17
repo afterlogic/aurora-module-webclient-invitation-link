@@ -208,7 +208,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	 * @ignore
 	 * @param \CUser $oUser
 	 */
-	public function onCreateOAuthAccount(&$oUser)
+	public function onCreateOAuthAccount($aArgs, &$oUser)
 	{
 		if (isset($_COOKIE['InvitationLinkHash']))
 		{

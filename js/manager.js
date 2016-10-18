@@ -159,11 +159,11 @@ module.exports = function (oAppData) {
 				});
 				App.subscribeEvent('ReceiveAjaxResponse::after', function (oParams) {
 					var oResponse = _.find(oParams.Responses, function (oRsp) {
-						return oRsp.Module === Settings.ServerModuleName && oRsp.Method === 'onAfterCreateUser';
+						return oRsp.Module === Settings.ServerModuleName && oRsp.Method === 'AdminPanelWebclient::CreateUser::after';
 					});
 					if (oResponse && !oResponse.Result)
 					{
-						Screens.showReport(TextUtils.i18n('%MODULENAME%/ERROR_AUTO_SEND_LINK'));
+						Screens.showReport(TextUtils.i18n('%MODULENAME%/ERROR_AUTO_SEND_LINK'), 0);
 					}
 				});
 			}

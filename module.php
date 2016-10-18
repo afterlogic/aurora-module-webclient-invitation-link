@@ -251,7 +251,6 @@ class InvitationLinkWebclientModule extends AApiModule
 		if (0 < $iUserId)
 		{
 			$sHash = $this->CreateInvitationLinkHash($iUserId);
-			$mResult  = $sHash;
 			if (!empty($sHash))
 			{
 				$aEventArgs = array(

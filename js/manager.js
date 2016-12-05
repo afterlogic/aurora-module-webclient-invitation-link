@@ -52,7 +52,7 @@ module.exports = function (oAppData) {
 						{
 							$.removeCookie('InvitationLinkHash');
 						}
-						Ajax.send('%ModuleName%', 'GetUserPublicId', { 'InvitationLinkHash': sInvitationLinkHash }, function (oResponse) {
+						Ajax.send(Settings.ServerModuleName, 'GetUserPublicId', { 'InvitationLinkHash': sInvitationLinkHash }, function (oResponse) {
 							if (oResponse.Result)
 							{
 								App.broadcastEvent('ShowWelcomeRegisterText', { 'UserName': oResponse.Result, 'WelcomeText': TextUtils.i18n('%MODULENAME%/INFO_WELCOME', {'USERNAME': oResponse.Result, 'SITE_NAME': UserSettings.SiteName}) });
@@ -79,7 +79,7 @@ module.exports = function (oAppData) {
 	
 	if (sInvitationLinkHash !== '')
 	{
-		Ajax.send('%ModuleName%', 'GetUserPublicId', { 'InvitationLinkHash': sInvitationLinkHash }, function (oResponse) {
+		Ajax.send(Settings.ServerModuleName, 'GetUserPublicId', { 'InvitationLinkHash': sInvitationLinkHash }, function (oResponse) {
 			if (oResponse.Result)
 			{
 				Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_LOGGED_IN'), 0);
@@ -97,7 +97,8 @@ module.exports = function (oAppData) {
 				var
 					iId = 0,
 					aInvitationLinks = {},
-					aInvitationHashes = {}
+					aInvitationHashes = {},
+					oInvitationView = null
 				;
 				App.subscribeEvent('StandardAuthWebclient::ConstructView::after', function (oParams) {
 					if (oParams.Name === 'CAccountsSettingsView')
@@ -124,7 +125,7 @@ module.exports = function (oAppData) {
 						oParams.View.invitationLink = ko.observable('');
 						oParams.View.bEnableSendInvitationLinkViaMail = Settings.EnableSendInvitationLinkViaMail;
 						oParams.View.resendInvitationLink = function () {
-							Ajax.send('%ModuleName%', 'SendNotification', { 'Email': oParams.View.publicId(), 'Hash': aInvitationHashes[iId] }, function (oResponse) {
+							Ajax.send(Settings.ServerModuleName, 'SendNotification', { 'Email': oParams.View.publicId(), 'Hash': aInvitationHashes[iId] }, function (oResponse) {
 								if (oResponse.Result)
 								{
 									Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_SEND_LINK'));
@@ -135,6 +136,7 @@ module.exports = function (oAppData) {
 								}
 							});
 						};
+						oInvitationView = oParams.View;
 					}
 				});
 				App.subscribeEvent('CCommonSettingsPaneView::onRoute::after', function (oParams) {
@@ -158,12 +160,15 @@ module.exports = function (oAppData) {
 					}
 				});
 				App.subscribeEvent('ReceiveAjaxResponse::after', function (oParams) {
-					var oResponse = _.find(oParams.Responses, function (oRsp) {
-						return oRsp.Module === Settings.ServerModuleName && oRsp.Method === 'AdminPanelWebclient::CreateUser::after';
-					});
-					if (oResponse && !oResponse.Result)
+					var oResponse = oParams.Response;
+					if (oInvitationView && oResponse.Module === 'AdminPanelWebclient' && oResponse.Method === 'CreateUser' && oResponse.Result)
 					{
-						Screens.showReport(TextUtils.i18n('%MODULENAME%/ERROR_AUTO_SEND_LINK'), 0);
+						Ajax.send(Settings.ServerModuleName, 'SendNotification', { 'Email': oInvitationView.publicId(), 'Hash': aInvitationHashes[iId] }, function (oResponse) {
+							if (!oResponse.Result)
+							{
+								Screens.showReport(TextUtils.i18n('%MODULENAME%/ERROR_AUTO_SEND_LINK'));
+							}
+						});
 					}
 				});
 			}

@@ -100,6 +100,16 @@ module.exports = function (oAppData) {
 					aInvitationHashes = {},
 					oInvitationView = null
 				;
+				
+				App.subscribeEvent('ReceiveAjaxResponse::after', function (oParams) {
+					if (oParams.Response.Method === 'CreateUserAccount' && oParams.Response.Module === 'StandardAuth' && oParams.Response.Result)
+					{
+						var iId = oParams.Request.Parameters.UserId;
+						
+						delete aInvitationLinks[iId];
+						delete aInvitationHashes[iId];
+					}
+				});
 				App.subscribeEvent('StandardAuthWebclient::ConstructView::after', function (oParams) {
 					if (oParams.Name === 'CAccountsSettingsView')
 					{

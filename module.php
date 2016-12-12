@@ -205,6 +205,8 @@ class InvitationLinkWebclientModule extends AApiModule
 				$oMin->UpdateMinByHash($mHash['__hash__'], $mHash);
 			}
 		}
+		
+//		$mResult = $aArgs;
 	}
 	
 	/**

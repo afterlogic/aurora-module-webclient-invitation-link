@@ -118,7 +118,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	}
 
 	/**
-	 * Returns user with identificator obtained from the Invitation link hash.
+	 * Returns user with identifier obtained from the Invitation link hash.
 	 * 
 	 * @param string $InvitationLinkHash Invitation link hash.
 	 * @return \CUser
@@ -144,7 +144,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	}
 	
 	/**
-	 * Writes to $aParams['UserId'] user identificator obtained from Invitation link hash.
+	 * Writes to $aParams['UserId'] user identifier obtained from Invitation link hash.
 	 * 
 	 * @ignore
 	 * @param array $aParams Is passed by reference.
@@ -185,7 +185,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	}
 	
 	/**
-	 * Updates Invitation link hash in Min module for user with $aData['UserId'] identificator.
+	 * Updates Invitation link hash in Min module for user with $aData['UserId'] identifier.
 	 * 
 	 * @ignore
 	 * @param array $aData Is passed by reference.
@@ -242,7 +242,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	}
 	
 	/**
-	 * Updates Invitation link hash in Min module for user with $aData['UserId'] identificator.
+	 * Updates Invitation link hash in Min module for user with $aData['UserId'] identifier.
 	 * 
 	 * @ignore
 	 * @param array $aData Is passed by reference.
@@ -276,7 +276,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	 * Deletes hash which are owened by the specified user.
 	 * 
 	 * @ignore
-	 * @param int $iUserId User Identificator.
+	 * @param int $iUserId User Identifier.
 	 */
 	public function onAfterDeleteUser($aArgs, &$iUserId)
 	{
@@ -288,7 +288,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	
 	/***** public functions might be called with web API *****/
 	/**
-	 * Obtaines list of module settings for authenticated user.
+	 * Obtains list of module settings for authenticated user.
 	 * 
 	 * @return array
 	 */
@@ -307,7 +307,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	/**
 	 * Create Invitation link hash for specified user.
 	 * 
-	 * @param int $UserId User identificator.
+	 * @param int $UserId User identifier.
 	 * @return string
 	 */
 	public function CreateInvitationLinkHash($UserId)
@@ -400,7 +400,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	/**
 	 * Returns Invitation link hash for specified user.
 	 * 
-	 * @param int $UserId User identificator.
+	 * @param int $UserId User identifier.
 	 * @return string
 	 */
 	public function GetInvitationLinkHash($UserId)

@@ -1,5 +1,8 @@
 {
-	
+	"Disabled": [
+		false,
+		"bool"
+	],
     "RegisterModuleName": [
 		"StandardRegisterFormWebclient",
 		"string"

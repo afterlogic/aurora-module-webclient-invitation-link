@@ -26,20 +26,6 @@ class InvitationLinkWebclientModule extends AApiModule
 		'Min'
 	);
 	
-	protected $aSettingsMap = array(
-		'RegisterModuleName' => array('StandardRegisterFormWebclient', 'string'),
-		'LoginModuleName' => array('StandardLoginFormWebclient', 'string'),
-		'EnableSendInvitationLinkViaMail' => array(true, 'bool'),
-		
-		'NotificationType' => array('mail', 'string'),
-		'NotificationEmail' => array('mail@localhost', 'string'),
-		'NotificationHost' => array('localhost', 'string'),
-		'NotificationPort' => array('25', 'string'),
-		'NotificationUseAuth' => array(false, 'bool'),
-		'NotificationLogin' => array('', 'string'),
-		'NotificationPassword' => array('', 'string')
-	);
-	
 	/***** private functions *****/
 	/**
 	 * Initializes module.

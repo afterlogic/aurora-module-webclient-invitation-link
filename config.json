@@ -1,12 +1,43 @@
 {
-    "RegisterModuleName": "StandardRegisterFormWebclient",
-    "LoginModuleName": "StandardLoginFormWebclient",
-    "EnableSendInvitationLinkViaMail": true,
-	"NotificationType": "smtp",
-	"NotificationEmail": "info@afterlogic.com",
-	"NotificationHost": "mail.afterlogic.com",
-	"NotificationPort": 25,
-	"NotificationUseAuth": true,
-	"NotificationLogin": "test1@afterlogic.com",
-	"NotificationPassword": "p12345q"	
+	
+    "RegisterModuleName": [
+		"StandardRegisterFormWebclient",
+		"string"
+	],
+	"LoginModuleName": [
+		"StandardLoginFormWebclient",
+		"string"
+	],
+	"EnableSendInvitationLinkViaMail": [
+		true,
+		"bool"
+	],
+	"NotificationType": [
+		"mail",
+		"string"
+	],
+	"NotificationEmail": [
+		"mail@localhost",
+		"string"
+	],
+	"NotificationHost": [
+		"localhost",
+		"string"
+	],
+	"NotificationPort": [
+		"25",
+		"string"
+	],
+	"NotificationUseAuth": [
+		false,
+		"bool"
+	],
+	"NotificationLogin": [
+		"",
+		"string"
+	],
+	"NotificationPassword": [
+		"",
+		"string"
+	]
 }

@@ -142,7 +142,7 @@ class InvitationLinkWebclientModule extends AApiModule
 			$oUser = $this->getUserByInvitationLinkHash($aArgs['InvitationLinkHash']);
 			if ($oUser)
 			{
-				$aArgs['UserId'] = $oUser->iId;
+				$aArgs['UserId'] = $oUser->EntityId;
 			}
 		}
 	}

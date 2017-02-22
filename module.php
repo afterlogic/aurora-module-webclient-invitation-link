@@ -18,7 +18,9 @@
  * @package Modules
  */
 
-class InvitationLinkWebclientModule extends AApiModule
+namespace Aurora\Modules;
+
+class InvitationLinkWebclientModule extends \AApiModule
 {
 	protected $oMinModuleDecorator;
 	
@@ -100,7 +102,7 @@ class InvitationLinkWebclientModule extends AApiModule
 	 */
 	protected function generateMinId($iUserId)
 	{
-		return implode('|', array($this->GetName(), $iUserId, md5($iUserId)));
+		return \implode('|', array($this->GetName(), $iUserId, \md5($iUserId)));
 	}
 
 	/**
@@ -331,27 +333,27 @@ class InvitationLinkWebclientModule extends AApiModule
 	 */
 	public function SendNotification($Email, $Hash)
 	{
-		$oSettings =& CApi::GetSettings();
+		$oSettings =& \CApi::GetSettings();
 		$sSiteName = $oSettings->GetConf('SiteName');
-		$sBody = file_get_contents($this->GetPath().'/templates/InvitationMail.html');
-		if (is_string($sBody)) 
+		$sBody = \file_get_contents($this->GetPath().'/templates/InvitationMail.html');
+		if (\is_string($sBody)) 
 		{
-			$sBody = strtr($sBody, array(
-				'{{INVITATION_URL}}' => rtrim($this->oHttp->GetFullUrl(), '\\/ ') . "/index.php#register/" . $Hash,
+			$sBody = \strtr($sBody, array(
+				'{{INVITATION_URL}}' => \rtrim($this->oHttp->GetFullUrl(), '\\/ ') . "/index.php#register/" . $Hash,
 				'{{SITE_NAME}}' => $sSiteName
 			));
 		}
 		$sSubject = "You're invited to join " . $sSiteName;
 		$sFrom = $this->getConfig('NotificationEmail', '');
 		
-		$oMail = new PHPMailer();
+		$oMail = new \PHPMailer();
 		
 		$sType = $this->getConfig('NotificationType', 'mail');
-		if (strtolower($sType) === 'mail')
+		if (\strtolower($sType) === 'mail')
 		{
 			$oMail->isMail();                                      
 		}
-		else if (strtolower($sType) === 'smtp')
+		else if (\strtolower($sType) === 'smtp')
 		{
 			$oMail->isSMTP();                                      
 			$oMail->Host = $this->getConfig('NotificationHost', '');

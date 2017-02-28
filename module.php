@@ -20,7 +20,7 @@
 
 namespace Aurora\Modules;
 
-class InvitationLinkWebclientModule extends \AApiModule
+class InvitationLinkWebclientModule extends \Aurora\System\AbstractModule
 {
 	protected $oMinModuleDecorator;
 	
@@ -49,7 +49,7 @@ class InvitationLinkWebclientModule extends \AApiModule
 		
 		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/InvitationLinkView.html', $this->sName);
 		
-		$oUser = \CApi::getAuthenticatedUser();
+		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 		if (!empty($oUser) && $oUser->Role === \EUserRole::SuperAdmin)
 		{
 			$this->includeTemplate('StandardAuthWebclient_AccountsSettingsView', 'Edit-Standard-Account-After', 'templates/AccountPasswordHintView.html', $this->sName);
@@ -65,7 +65,7 @@ class InvitationLinkWebclientModule extends \AApiModule
 	{
 		if ($this->oMinModuleDecorator === null)
 		{
-			$this->oMinModuleDecorator = \CApi::GetModuleDecorator('Min');
+			$this->oMinModuleDecorator = \Aurora\System\Api::GetModuleDecorator('Min');
 		}
 		
 		return $this->oMinModuleDecorator;
@@ -78,7 +78,7 @@ class InvitationLinkWebclientModule extends \AApiModule
 	 */
 	protected function getRegisterModuleHash()
 	{
-		$oRegisterModuleDecorator = \CApi::GetModuleDecorator($this->getConfig('RegisterModuleName'));
+		$oRegisterModuleDecorator = \Aurora\System\Api::GetModuleDecorator($this->getConfig('RegisterModuleName'));
 		$oRegisterModuleSettings = $oRegisterModuleDecorator->GetSettings();
 		return $oRegisterModuleSettings['HashModuleName'];
 	}
@@ -90,7 +90,7 @@ class InvitationLinkWebclientModule extends \AApiModule
 	 */
 	protected function getLoginModuleHash()
 	{
-		$oLoginModuleDecorator = \CApi::GetModuleDecorator($this->getConfig('LoginModuleName'));
+		$oLoginModuleDecorator = \Aurora\System\Api::GetModuleDecorator($this->getConfig('LoginModuleName'));
 		$oLoginModuleSettings = $oLoginModuleDecorator->GetSettings();
 		return $oLoginModuleSettings['HashModuleName'];
 	}
@@ -121,7 +121,7 @@ class InvitationLinkWebclientModule extends \AApiModule
 			if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
 			{
 				$iUserId = $mHash['UserId'];
-				$oCore = \CApi::GetModuleDecorator('Core');
+				$oCore = \Aurora\System\Api::GetModuleDecorator('Core');
 				if ($oCore)
 				{
 					$oUser = $oCore->GetUser($iUserId);
@@ -282,7 +282,7 @@ class InvitationLinkWebclientModule extends \AApiModule
 	 */
 	public function GetSettings()
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		return array(
 			'RegisterModuleHash' => $this->getRegisterModuleHash(),
@@ -300,7 +300,7 @@ class InvitationLinkWebclientModule extends \AApiModule
 	 */
 	public function CreateInvitationLinkHash($UserId)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		$mHash = '';
 		$oMin = $this->getMinModuleDecorator();
@@ -333,7 +333,7 @@ class InvitationLinkWebclientModule extends \AApiModule
 	 */
 	public function SendNotification($Email, $Hash)
 	{
-		$oSettings =& \CApi::GetSettings();
+		$oSettings =& \Aurora\System\Api::GetSettings();
 		$sSiteName = $oSettings->GetConf('SiteName');
 		$sBody = \file_get_contents($this->GetPath().'/templates/InvitationMail.html');
 		if (\is_string($sBody)) 
@@ -393,7 +393,7 @@ class InvitationLinkWebclientModule extends \AApiModule
 	 */
 	public function GetInvitationLinkHash($UserId)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		$mHash = '';
 		$oMin = $this->getMinModuleDecorator();
@@ -415,7 +415,7 @@ class InvitationLinkWebclientModule extends \AApiModule
 			}
 		}
 		
-		$oAuthenticatedUser = \CApi::getAuthenticatedUser();
+		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
 		if (empty($oAuthenticatedUser) || $oAuthenticatedUser->Role !== \EUserRole::SuperAdmin)
 		{
 			return '';
@@ -432,7 +432,7 @@ class InvitationLinkWebclientModule extends \AApiModule
 	 */
 	public function GetUserPublicId($InvitationLinkHash)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		$oUser = $this->getUserByInvitationLinkHash($InvitationLinkHash);
 		if ($oUser)

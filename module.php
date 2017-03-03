@@ -20,7 +20,7 @@
 
 namespace Aurora\Modules;
 
-class InvitationLinkWebclientModule extends \Aurora\System\AbstractModule
+class InvitationLinkWebclientModule extends \Aurora\System\Module\AbstractModule
 {
 	protected $oMinModuleDecorator;
 	

@@ -43,7 +43,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/InvitationLinkView.html', $this->sName);
 		
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
-		if (!empty($oUser) && $oUser->Role === \EUserRole::SuperAdmin)
+		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 		{
 			$this->includeTemplate('StandardAuthWebclient_AccountsSettingsView', 'Edit-Standard-Account-After', 'templates/AccountPasswordHintView.html', $this->sName);
 		}
@@ -275,7 +275,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 */
 	public function GetSettings()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		return array(
 			'RegisterModuleHash' => $this->getRegisterModuleHash(),
@@ -293,7 +293,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 */
 	public function CreateInvitationLinkHash($UserId)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		$mHash = '';
 		$oMin = $this->getMinModuleDecorator();
@@ -386,7 +386,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 */
 	public function GetInvitationLinkHash($UserId)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		$mHash = '';
 		$oMin = $this->getMinModuleDecorator();
@@ -409,7 +409,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		}
 		
 		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
-		if (empty($oAuthenticatedUser) || $oAuthenticatedUser->Role !== \EUserRole::SuperAdmin)
+		if (empty($oAuthenticatedUser) || $oAuthenticatedUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin)
 		{
 			return '';
 		}
@@ -425,7 +425,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 */
 	public function GetUserPublicId($InvitationLinkHash)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		$oUser = $this->getUserByInvitationLinkHash($InvitationLinkHash);
 		if ($oUser)

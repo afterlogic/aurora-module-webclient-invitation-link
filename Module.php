@@ -58,7 +58,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	{
 		if ($this->oMinModuleDecorator === null)
 		{
-			$this->oMinModuleDecorator = \Aurora\System\Api::GetModuleDecorator('Min');
+			$this->oMinModuleDecorator = \Aurora\Modules\Min\Module::Decorator();
 		}
 		
 		return $this->oMinModuleDecorator;
@@ -114,7 +114,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
 			{
 				$iUserId = $mHash['UserId'];
-				$oCore = \Aurora\System\Api::GetModuleDecorator('Core');
+				$oCore = \Aurora\Modules\Core\Module::Decorator();
 				if ($oCore)
 				{
 					$oUser = $oCore->GetUser($iUserId);

@@ -102,7 +102,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 * Returns user with identifier obtained from the Invitation link hash.
 	 * 
 	 * @param string $InvitationLinkHash Invitation link hash.
-	 * @return \CUser
+	 * @return \Aurora\Modules\Core\Classes\User
 	 */
 	protected function getUserByInvitationLinkHash($InvitationLinkHash)
 	{
@@ -194,7 +194,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 * Writes to $oUser variable user object for Invitation link hash from cookie.
 	 * 
 	 * @ignore
-	 * @param \CUser $oUser
+	 * @param \Aurora\Modules\Core\Classes\User $oUser
 	 */
 	public function onCreateOAuthAccount($aArgs, &$oUser)
 	{

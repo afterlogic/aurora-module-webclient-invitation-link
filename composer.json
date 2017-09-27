@@ -7,8 +7,6 @@
 		"phpmailer/phpmailer": "~5.2"
 	},
 	"extra": {
-		"installer-name": "InvitationLinkWebclient",
-		"include-in-mobile": false,
-		"include-in-desktop": true
+		"installer-name": "InvitationLinkWebclient"
 	}
 }

@@ -96,6 +96,7 @@ module.exports = function (oAppData) {
 			start: function (ModulesManager) {
 				var
 					iId = 0,
+					iJustCreatedId = 0,
 					aInvitationLinks = {},
 					aInvitationHashes = {},
 					oInvitationView = null
@@ -121,11 +122,17 @@ module.exports = function (oAppData) {
 					oParams.View.showPasswordRevokesInvitationHint(!!aInvitationHashes[iId]);
 					if (!aInvitationLinks[iId])
 					{
-						Ajax.send(Settings.ServerModuleName, 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse) {
-							var sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : '';
-							aInvitationLinks[iId] = sLink;
-							aInvitationHashes[iId] = oResponse.Result;
-							oParams.View.showPasswordRevokesInvitationHint(!!aInvitationHashes[iId]);
+						Ajax.send(Settings.ServerModuleName, 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse, oRequest) {
+							var
+								iParamId = Types.pInt(oRequest && oRequest.Parameters && oRequest.Parameters.UserId),
+								sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : ''
+							;
+							if (iParamId > 0 && iParamId === iId)
+							{
+								aInvitationLinks[iId] = sLink;
+								aInvitationHashes[iId] = oResponse.Result;
+								oParams.View.showPasswordRevokesInvitationHint(!!aInvitationHashes[iId]);
+							}
 						});
 					}
 				});
@@ -156,11 +163,17 @@ module.exports = function (oAppData) {
 						oParams.View.invitationLink(aInvitationLinks[iId] ? aInvitationLinks[iId] : '');
 						if (!aInvitationLinks[iId])
 						{
-							Ajax.send(Settings.ServerModuleName, 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse) {
-								var sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : '';
-								oParams.View.invitationLink(sLink);
-								aInvitationLinks[iId] = sLink;
-								aInvitationHashes[iId] = oResponse.Result;
+							Ajax.send(Settings.ServerModuleName, 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse, oRequest) {
+								var
+									iParamId = Types.pInt(oRequest && oRequest.Parameters && oRequest.Parameters.UserId),
+									sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : ''
+								;
+								if (iParamId > 0 && iParamId === iId)
+								{
+									oParams.View.invitationLink(sLink);
+									aInvitationLinks[iId] = sLink;
+									aInvitationHashes[iId] = oResponse.Result;
+								}
 							});
 						}
 					}
@@ -173,6 +186,11 @@ module.exports = function (oAppData) {
 					var oResponse = oParams.Response;
 					if (oInvitationView && oResponse.Module === 'AdminPanelWebclient' && oResponse.Method === 'CreateUser' && oResponse.Result)
 					{
+						iJustCreatedId = Types.pInt(oResponse.Result);
+					}
+					if (iJustCreatedId === iId && oInvitationView && oResponse.Module === 'InvitationLinkWebclient' && oResponse.Method === 'GetInvitationLinkHash' && oResponse.Result)
+					{
+						iJustCreatedId = 0;
 						Ajax.send(Settings.ServerModuleName, 'SendNotification', { 'Email': oInvitationView.publicId(), 'Hash': aInvitationHashes[iId] }, function (oResponse) {
 							if (!oResponse.Result)
 							{

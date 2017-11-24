@@ -112,12 +112,12 @@ module.exports = function (oAppData) {
 					}
 				});
 				App.subscribeEvent('StandardAuthWebclient::ConstructView::after', function (oParams) {
-					if (oParams.Name === 'CAccountsSettingsView')
+					if (oParams.Name === 'CStandardAccountsSettingsFormView')
 					{
 						oParams.View.showPasswordRevokesInvitationHint = ko.observable(false);
 					}
 				});
-				App.subscribeEvent('CAccountsSettingsView::onRoute::after', function (oParams) {
+				App.subscribeEvent('CStandardAccountsSettingsFormView::onRoute::after', function (oParams) {
 					iId = oParams.View.iUserId;
 					oParams.View.showPasswordRevokesInvitationHint(!!aInvitationHashes[iId]);
 					if (!aInvitationLinks[iId])

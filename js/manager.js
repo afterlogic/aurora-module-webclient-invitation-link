@@ -117,7 +117,7 @@ module.exports = function (oAppData) {
 						oParams.View.showPasswordRevokesInvitationHint = ko.observable(false);
 					}
 				});
-				App.subscribeEvent('CStandardAccountsSettingsFormView::onRoute::after', function (oParams) {
+				App.subscribeEvent('CStandardAccountsSettingsFormView::onShow::after', function (oParams) {
 					iId = oParams.View.iUserId;
 					oParams.View.showPasswordRevokesInvitationHint(!!aInvitationHashes[iId]);
 					if (!aInvitationLinks[iId])

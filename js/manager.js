@@ -4,7 +4,6 @@ module.exports = function (oAppData) {
 	require('%PathToCoreWebclientModule%/js/vendors/jquery.cookie.js');
 	
 	var
-		_ = require('underscore'),
 		$ = require('jquery'),
 		ko = require('knockout'),
 		
@@ -18,7 +17,6 @@ module.exports = function (oAppData) {
 		UserSettings = require('%PathToCoreWebclientModule%/js/Settings.js'),
 		
 		Settings = require('modules/%ModuleName%/js/Settings.js'),
-		oSettings = _.extend({}, oAppData[Settings.ServerModuleName] || {}, oAppData['%ModuleName%'] || {}),
 		
 		bAdminUser = App.getUserRole() === Enums.UserRole.SuperAdmin,
 		bAnonimUser = App.getUserRole() === Enums.UserRole.Anonymous,
@@ -34,7 +32,7 @@ module.exports = function (oAppData) {
 		sInvitationLinkHash = fGetInvitationLinkHash()
 	;
 	
-	Settings.init(oSettings);
+	Settings.init(oAppData);
 
 	if (!App.isPublic() && bAnonimUser)
 	{

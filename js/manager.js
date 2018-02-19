@@ -101,9 +101,9 @@ module.exports = function (oAppData) {
 				;
 				
 				App.subscribeEvent('ReceiveAjaxResponse::after', function (oParams) {
-					if (oParams.Response.Method === 'CreateUserAccount' && oParams.Response.Module === 'StandardAuth' && oParams.Response.Result)
+					if (oParams.Response.Method === 'CreateAuthenticatedUserAccount' && oParams.Response.Module === 'StandardAuth' && oParams.Response.Result)
 					{
-						var iId = oParams.Request.Parameters.UserId;
+						var iId = App.getUserId();
 						
 						delete aInvitationLinks[iId];
 						delete aInvitationHashes[iId];

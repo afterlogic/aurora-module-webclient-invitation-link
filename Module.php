@@ -250,7 +250,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	
 	public function onCreateInvitationLinkHash($aArgs, &$mResult)
 	{
-		$mResult = $this->SendNotification($aArgs['PublicId'], $aArgs['Hash']);
+		$mResult = $this->sendNotification($aArgs['PublicId'], $aArgs['Hash']);
 	}
 	
 	/**
@@ -324,7 +324,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 * @param string $Email
 	 * @param string $Hash
 	 */
-	public function SendNotification($Email, $Hash)
+	protected function sendNotification($Email, $Hash)
 	{
 		$oSettings =& \Aurora\System\Api::GetSettings();
 		$sSiteName = $oSettings->GetConf('SiteName');

@@ -30,15 +30,15 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 */
 	public function init()
 	{
-		$this->subscribeEvent('Register::before', array($this, 'onBeforeRegister'));
-		$this->subscribeEvent('Register::after', array($this, 'onAfterRegister'));
+		$this->subscribeEvent('Core::Register::before', array($this, 'onBeforeRegister'));
+		$this->subscribeEvent('Core::Register::after', array($this, 'onAfterRegister'));
 		
 		$this->subscribeEvent('AdminPanelWebclient::CreateUser::after', array($this, 'onAfterCreateUser'));
 
 		$this->subscribeEvent('StandardAuth::CreateUserAccount::after', array($this, 'onAfterCreateUserAccount'));
 		$this->subscribeEvent('InvitationLinkWebclient::CreateInvitationLinkHash', array($this, 'onCreateInvitationLinkHash'));
 		
-		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
+		$this->subscribeEvent('OAuthIntegratorWebclient::CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
 		$this->subscribeEvent('Core::AfterDeleteUser', array($this, 'onAfterDeleteUser'));
 		
 		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/InvitationLinkView.html', $this->sName);

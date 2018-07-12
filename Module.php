@@ -351,7 +351,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		{
 			$oMail->isSMTP();                                      
 			$oMail->Host = $this->getConfig('NotificationHost', '');
-			$oMail->Port = 25;                                    
+			$oMail->Port = (int) $this->getConfig('NotificationPort', 25);;                                    
 			$oMail->SMTPAuth = (bool) $this->getConfig('NotificationUseAuth', false);
 			if ($oMail->SMTPAuth)
 			{

@@ -4,6 +4,7 @@ module.exports = function (oAppData) {
 	require('%PathToCoreWebclientModule%/js/vendors/jquery.cookie.js');
 	
 	var
+		_ = require('underscore'),
 		$ = require('jquery'),
 		ko = require('knockout'),
 		
@@ -155,29 +156,32 @@ module.exports = function (oAppData) {
 					}
 				});
 				App.subscribeEvent('CCommonSettingsPaneView::onRoute::after', function (oParams) {
-					iId = Types.pInt(oParams.Id);
-					if (iId > 0)
+					if (oParams.View && _.isFunction(oParams.View.invitationLink))
 					{
-						oParams.View.invitationLink(aInvitationLinks[iId] ? aInvitationLinks[iId] : '');
-						if (!aInvitationLinks[iId])
+						iId = Types.pInt(oParams.Id);
+						if (iId > 0)
 						{
-							Ajax.send(Settings.ServerModuleName, 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse, oRequest) {
-								var
-									iParamId = Types.pInt(oRequest && oRequest.Parameters && oRequest.Parameters.UserId),
-									sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : ''
-								;
-								if (iParamId > 0 && iParamId === iId)
-								{
-									oParams.View.invitationLink(sLink);
-									aInvitationLinks[iId] = sLink;
-									aInvitationHashes[iId] = oResponse.Result;
-								}
-							});
+							oParams.View.invitationLink(aInvitationLinks[iId] ? aInvitationLinks[iId] : '');
+							if (!aInvitationLinks[iId])
+							{
+								Ajax.send(Settings.ServerModuleName, 'GetInvitationLinkHash', { 'UserId': iId }, function (oResponse, oRequest) {
+									var
+										iParamId = Types.pInt(oRequest && oRequest.Parameters && oRequest.Parameters.UserId),
+										sLink = oResponse.Result ? Routing.getAppUrlWithHash([Settings.RegisterModuleHash, oResponse.Result]) : ''
+									;
+									if (iParamId > 0 && iParamId === iId)
+									{
+										oParams.View.invitationLink(sLink);
+										aInvitationLinks[iId] = sLink;
+										aInvitationHashes[iId] = oResponse.Result;
+									}
+								});
+							}
 						}
-					}
-					else
-					{
-						oParams.View.invitationLink('');
+						else
+						{
+							oParams.View.invitationLink('');
+						}
 					}
 				});
 				App.subscribeEvent('ReceiveAjaxResponse::after', function (oParams) {

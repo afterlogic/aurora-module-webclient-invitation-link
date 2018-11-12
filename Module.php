@@ -72,9 +72,15 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 */
 	protected function getRegisterModuleHash()
 	{
+		$sResult = null;
 		$oRegisterModuleDecorator = \Aurora\System\Api::GetModuleDecorator($this->getConfig('RegisterModuleName'));
-		$oRegisterModuleSettings = $oRegisterModuleDecorator->GetSettings();
-		return $oRegisterModuleSettings['HashModuleName'];
+		if ($oRegisterModuleDecorator)
+		{
+			$oRegisterModuleSettings = $oRegisterModuleDecorator->GetSettings();
+			$sResult = $oRegisterModuleSettings['HashModuleName'];
+		}
+
+		return $sResult;
 	}
 	
 	/**
@@ -84,9 +90,15 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 */
 	protected function getLoginModuleHash()
 	{
+		$sResult = null;
 		$oLoginModuleDecorator = \Aurora\System\Api::GetModuleDecorator($this->getConfig('LoginModuleName'));
-		$oLoginModuleSettings = $oLoginModuleDecorator->GetSettings();
-		return $oLoginModuleSettings['HashModuleName'];
+		if ($oLoginModuleDecorator)
+		{
+			$oLoginModuleSettings = $oLoginModuleDecorator->GetSettings();
+			$sResult = $oLoginModuleSettings['HashModuleName'];
+		}
+
+		return $sResult;
 	}
 	
 	/**

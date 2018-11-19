@@ -41,12 +41,12 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
 		$this->subscribeEvent('Core::AfterDeleteUser', array($this, 'onAfterDeleteUser'));
 		
-		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/InvitationLinkView.html', $this->sName);
+		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/InvitationLinkView.html', self::GetName());
 		
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 		{
-			$this->includeTemplate('StandardAuthWebclient_StandardAccountsSettingsFormView', 'Edit-Standard-Account-After', 'templates/AccountPasswordHintView.html', $this->sName);
+			$this->includeTemplate('StandardAuthWebclient_StandardAccountsSettingsFormView', 'Edit-Standard-Account-After', 'templates/AccountPasswordHintView.html', self::GetName());
 		}
 	}
 	
@@ -108,7 +108,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 */
 	protected function generateMinId($iUserId)
 	{
-		return \implode('|', array($this->GetName(), $iUserId, \md5($iUserId)));
+		return \implode('|', array(self::GetName(), $iUserId, \md5($iUserId)));
 	}
 
 	/**

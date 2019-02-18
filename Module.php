@@ -340,7 +340,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	protected function sendNotification($Email, $Hash)
 	{
 		$oSettings =& \Aurora\System\Api::GetSettings();
-		$sSiteName = $oSettings->GetConf('SiteName');
+		$sSiteName = $oSettings->SiteName;
 		$sBody = \file_get_contents($this->GetPath().'/templates/InvitationMail.html');
 		if (\is_string($sBody)) 
 		{

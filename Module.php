@@ -140,19 +140,28 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	}
 	
 	/**
-	 * Writes to $aParams['UserId'] user identifier obtained from Invitation link hash.
+	 * Writes to $aArgs['UserId'] user identifier obtained from Invitation link hash.
 	 * 
 	 * @ignore
-	 * @param array $aParams Is passed by reference.
+	 * @param array $aArgs
+	 * @param mixed $mResult
 	 */
 	public function onBeforeRegister(&$aArgs, &$mResult)
 	{
-		if (!empty($aArgs['InvitationLinkHash']))
+		if (empty($aArgs['InvitationLinkHash']))
+		{
+			return true; // break other subscriptions and Register method itself to prevent creation of a new user
+		}
+		else
 		{
 			$oUser = $this->getUserByInvitationLinkHash($aArgs['InvitationLinkHash']);
-			if ($oUser)
+			if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
 			{
 				$aArgs['UserId'] = $oUser->EntityId;
+			}
+			else
+			{
+				return true; // break other subscriptions and Register method itself to prevent creation of a new user
 			}
 		}
 	}
@@ -161,7 +170,8 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 * Updates Invitation link hash in Min module.
 	 * 
 	 * @ignore
-	 * @param array $aParams Is passed by reference.
+	 * @param array $aArgs
+	 * @param mixed $mResult
 	 */
 	public function onAfterRegister($aArgs, &$mResult)
 	{
@@ -181,10 +191,11 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	}
 	
 	/**
-	 * Updates Invitation link hash in Min module for user with $aData['UserId'] identifier.
+	 * Updates Invitation link hash in Min module for user with $aArgs['UserId'] identifier.
 	 * 
 	 * @ignore
-	 * @param array $aData Is passed by reference.
+	 * @param array $aArgs
+	 * @param mixed $mResult
 	 */
 	public function onAfterCreateUserAccount($aArgs, &$mResult)
 	{
@@ -238,10 +249,11 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	}
 	
 	/**
-	 * Updates Invitation link hash in Min module for user with $aData['UserId'] identifier.
+	 * Updates Invitation link hash in Min module for user with $aArgs['UserId'] identifier.
 	 * 
 	 * @ignore
-	 * @param array $aData Is passed by reference.
+	 * @param array $aArgs
+	 * @param mixed $mResult
 	 */
 	public function onAfterCreateUser($aArgs, &$mResult)
 	{

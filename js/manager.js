@@ -186,7 +186,7 @@ module.exports = function (oAppData) {
 				});
 				App.subscribeEvent('ReceiveAjaxResponse::after', function (oParams) {
 					var oResponse = oParams.Response;
-					if (oInvitationView && oResponse.Module === 'AdminPanelWebclient' && oResponse.Method === 'CreateUser' && oResponse.Result)
+					if (oInvitationView && oResponse.Module === 'Core' && oResponse.Method === 'CreateUser' && oResponse.Result)
 					{
 						iJustCreatedId = Types.pInt(oResponse.Result);
 					}

@@ -35,7 +35,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		$this->subscribeEvent('Register::before', array($this, 'onBeforeRegister'));
 		$this->subscribeEvent('Register::after', array($this, 'onAfterRegister'));
 		
-		$this->subscribeEvent('AdminPanelWebclient::CreateUser::after', array($this, 'onAfterCreateUser'));
+		$this->subscribeEvent('Core::CreateUser::after', array($this, 'onAfterCreateUser'));
 
 		$this->subscribeEvent('StandardAuth::CreateUserAccount::after', array($this, 'onAfterCreateUserAccount'));
 		$this->subscribeEvent('InvitationLinkWebclient::CreateInvitationLinkHash', array($this, 'onCreateInvitationLinkHash'));
@@ -129,11 +129,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
 			{
 				$iUserId = $mHash['UserId'];
-				$oCore = \Aurora\Modules\Core\Module::Decorator();
-				if ($oCore)
-				{
-					$oUser = $oCore->GetUser($iUserId);
-				}
+				$oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserUnchecked($iUserId);
 			}
 		}
 		return $oUser;

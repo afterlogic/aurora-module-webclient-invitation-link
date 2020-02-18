@@ -171,7 +171,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 */
 	public function onAfterRegister($aArgs, &$mResult)
 	{
-		if (!empty($aArgs['InvitationLinkHash']))
+		if ($mResult && !empty($aArgs['InvitationLinkHash']))
 		{
 			$oMin = $this->getMinModuleDecorator();
 			if ($oMin)

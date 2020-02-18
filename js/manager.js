@@ -20,6 +20,7 @@ module.exports = function (oAppData) {
 		Settings = require('modules/%ModuleName%/js/Settings.js'),
 		
 		bAdminUser = App.getUserRole() === Enums.UserRole.SuperAdmin,
+		bTenantAdminUser = App.getUserRole() === Enums.UserRole.TenantAdmin,
 		bAnonimUser = App.getUserRole() === Enums.UserRole.Anonymous,
 		
 		fGetInvitationLinkHash = function () {
@@ -89,7 +90,7 @@ module.exports = function (oAppData) {
 		});
 	}
 	
-	if (bAdminUser)
+	if (bAdminUser || bTenantAdminUser)
 	{
 		return {
 			start: function (ModulesManager) {

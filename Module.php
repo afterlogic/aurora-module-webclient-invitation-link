@@ -411,6 +411,23 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
+		$oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserUnchecked($UserId);
+		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
+		$bAllowHash = false;
+		if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && !empty($oUser) && $oUser->IdTenant === $oAuthenticatedUser->IdTenant)
+		{
+			$bAllowHash = true;
+		}
+		else if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
+		{
+			$bAllowHash = true;
+		}
+		
+		if (!$bAllowHash)
+		{
+			return '';
+		}
+		
 		$mHash = '';
 		$oMin = $this->getMinModuleDecorator();
 		if ($oMin)
@@ -429,12 +446,6 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 					$mHash = '';
 				}
 			}
-		}
-		
-		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
-		if (empty($oAuthenticatedUser) || $oAuthenticatedUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin)
-		{
-			return '';
 		}
 		
 		return $mHash;

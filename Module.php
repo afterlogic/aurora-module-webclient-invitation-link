@@ -41,7 +41,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		$this->subscribeEvent('InvitationLinkWebclient::CreateInvitationLinkHash', array($this, 'onCreateInvitationLinkHash'));
 		
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
-		$this->subscribeEvent('Core::DeleteUser::before', array($this, 'onBeforeDeleteUser'));
+		$this->subscribeEvent('Core::DeleteUser::after', array($this, 'onAfterDeleteUser'));
 		
 		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/InvitationLinkView.html', self::GetName());
 		
@@ -282,11 +282,14 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 * @ignore
 	 * @param int $iUserId User Identifier.
 	 */
-	public function onBeforeDeleteUser($aArgs, &$iUserId)
+	public function onAfterDeleteUser($aArgs, $mResult)
 	{
-		$this->getMinModuleDecorator()->DeleteMinByID(
-			$this->generateMinId($iUserId)
-		);
+		if ($mResult)
+		{
+			$this->getMinModuleDecorator()->DeleteMinByID(
+				$this->generateMinId($aArgs['UserId'])
+			);
+		}
 	}
 	/***** private functions *****/
 	

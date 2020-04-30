@@ -9,7 +9,7 @@ namespace Aurora\Modules\InvitationLinkWebclient;
 
 /**
  * Creates invitation link upon creating user in admin panel, and allows registering new user account with this link.
- * 
+ *
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.
@@ -19,42 +19,42 @@ namespace Aurora\Modules\InvitationLinkWebclient;
 class Module extends \Aurora\System\Module\AbstractWebclientModule
 {
 	protected $oMinModuleDecorator;
-	
+
 	protected $aRequireModules = array(
 		'Min'
 	);
-	
+
 	/***** private functions *****/
 	/**
 	 * Initializes module.
-	 * 
+	 *
 	 * @ignore
 	 */
 	public function init()
 	{
 		$this->subscribeEvent('Register::before', array($this, 'onBeforeRegister'));
 		$this->subscribeEvent('Register::after', array($this, 'onAfterRegister'));
-		
+
 		$this->subscribeEvent('Core::CreateUser::after', array($this, 'onAfterCreateUser'));
 
 		$this->subscribeEvent('StandardAuth::CreateUserAccount::after', array($this, 'onAfterCreateUserAccount'));
 		$this->subscribeEvent('InvitationLinkWebclient::CreateInvitationLinkHash', array($this, 'onCreateInvitationLinkHash'));
-		
+
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
 		$this->subscribeEvent('Core::DeleteUser::after', array($this, 'onAfterDeleteUser'));
-		
+
 		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/InvitationLinkView.html', self::GetName());
-		
+
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 		{
 			$this->includeTemplate('StandardAuthWebclient_StandardAccountsSettingsFormView', 'Edit-Standard-Account-After', 'templates/AccountPasswordHintView.html', self::GetName());
 		}
 	}
-	
+
 	/**
 	* Returns Min module decorator.
-	* 
+	*
 	* @return \CApiModuleDecorator
 	*/
 	private function getMinModuleDecorator()
@@ -63,13 +63,13 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		{
 			$this->oMinModuleDecorator = \Aurora\Modules\Min\Module::Decorator();
 		}
-		
+
 		return $this->oMinModuleDecorator;
 	}
-	
+
 	/**
 	 * Returns register module hash.
-	 * 
+	 *
 	 * @return string
 	 */
 	protected function getRegisterModuleHash()
@@ -84,10 +84,10 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
 		return $sResult;
 	}
-	
+
 	/**
 	 * Returns login module hash.
-	 * 
+	 *
 	 * @return string
 	 */
 	protected function getLoginModuleHash()
@@ -102,10 +102,10 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
 		return $sResult;
 	}
-	
+
 	/**
 	 * Returns id for Min Module
-	 * 
+	 *
 	 * @return string
 	 */
 	protected function generateMinId($iUserId)
@@ -115,7 +115,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
 	/**
 	 * Returns user with identifier obtained from the Invitation link hash.
-	 * 
+	 *
 	 * @param string $InvitationLinkHash Invitation link hash.
 	 * @return \Aurora\Modules\Core\Classes\User
 	 */
@@ -134,10 +134,10 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		}
 		return $oUser;
 	}
-	
+
 	/**
 	 * Writes to $aArgs['UserId'] user identifier obtained from Invitation link hash.
-	 * 
+	 *
 	 * @ignore
 	 * @param array $aArgs
 	 * @param mixed $mResult
@@ -161,10 +161,10 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			}
 		}
 	}
-	
+
 	/**
 	 * Updates Invitation link hash in Min module.
-	 * 
+	 *
 	 * @ignore
 	 * @param array $aArgs
 	 * @param mixed $mResult
@@ -185,10 +185,10 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			}
 		}
 	}
-	
+
 	/**
 	 * Updates Invitation link hash in Min module for user with $aArgs['UserId'] identifier.
-	 * 
+	 *
 	 * @ignore
 	 * @param array $aArgs
 	 * @param mixed $mResult
@@ -201,20 +201,20 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			$mHash = $oMin->GetMinById(
 				$this->generateMinId($aArgs['UserId'])
 			);
-			
+
 			if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
 			{
 				$mHash['Registered'] = true;
 				$oMin->UpdateMinByHash($mHash['__hash__'], $mHash);
 			}
 		}
-		
+
 //		$mResult = $aArgs;
 	}
-	
+
 	/**
 	 * Writes to $oUser variable user object for Invitation link hash from cookie.
-	 * 
+	 *
 	 * @ignore
 	 * @param \Aurora\Modules\Core\Classes\User $oUser
 	 */
@@ -223,13 +223,13 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		if (isset($_COOKIE['InvitationLinkHash']))
 		{
 			$InvitationLinkHash = $_COOKIE['InvitationLinkHash'];
-			
+
 			$oFoundUser = $this->getUserByInvitationLinkHash($InvitationLinkHash);
 			if (!empty($oFoundUser))
 			{
 				unset($_COOKIE['InvitationLinkHash']);
 				$oUser = $oFoundUser;
-				
+
 				$oMin = $this->getMinModuleDecorator();
 				if ($oMin)
 				{
@@ -243,10 +243,10 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			}
 		}
 	}
-	
+
 	/**
 	 * Updates Invitation link hash in Min module for user with $aArgs['UserId'] identifier.
-	 * 
+	 *
 	 * @ignore
 	 * @param array $aArgs
 	 * @param mixed $mResult
@@ -264,21 +264,21 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 					'Hash' => $sHash
 				);
 				$this->broadcastEvent(
-					'CreateInvitationLinkHash', 
+					'CreateInvitationLinkHash',
 					$aEventArgs
 				);
 			}
 		}
-	}	
-	
+	}
+
 	public function onCreateInvitationLinkHash($aArgs, &$mResult)
 	{
-		$mResult = $this->sendNotification($aArgs['PublicId'], $aArgs['Hash']);
+		$mResult = $this->Decorator()->SendNotification($aArgs['PublicId'], $aArgs['Hash']);
 	}
-	
+
 	/**
 	 * Deletes hash which are owened by the specified user.
-	 * 
+	 *
 	 * @ignore
 	 * @param int $iUserId User Identifier.
 	 */
@@ -292,17 +292,17 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		}
 	}
 	/***** private functions *****/
-	
+
 	/***** public functions might be called with web API *****/
 	/**
 	 * Obtains list of module settings for authenticated user.
-	 * 
+	 *
 	 * @return array
 	 */
 	public function GetSettings()
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
-		
+
 		return array(
 			'RegisterModuleHash' => $this->getRegisterModuleHash(),
 			'RegisterModuleName' => $this->getConfig('RegisterModuleName'),
@@ -310,17 +310,17 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			'EnableSendInvitationLinkViaMail' => $this->getConfig('EnableSendInvitationLinkViaMail'),
 		);
 	}
-	
+
 	/**
 	 * Create Invitation link hash for specified user.
-	 * 
+	 *
 	 * @param int $UserId User identifier.
 	 * @return string
 	 */
 	public function CreateInvitationLinkHash($UserId)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
-		
+
 		$mHash = '';
 		$oMin = $this->getMinModuleDecorator();
 		if ($oMin)
@@ -341,21 +341,23 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 				$mHash = $this->GetInvitationLinkHash($UserId);
 			}
 		}
-		
+
 		return $mHash;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @param string $Email
 	 * @param string $Hash
 	 */
-	protected function sendNotification($Email, $Hash)
+	public function SendNotification($Email, $Hash)
 	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+
 		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 		$sSiteName = $oModuleManager->getModuleConfigValue('Core', 'SiteName');
 		$sBody = \file_get_contents($this->GetPath().'/templates/InvitationMail.html');
-		if (\is_string($sBody)) 
+		if (\is_string($sBody))
 		{
 			$sBody = \strtr($sBody, array(
 				'{{INVITATION_URL}}' => \rtrim($this->oHttp->GetFullUrl(), '\\/ ') . "/index.php#register/" . $Hash,
@@ -364,19 +366,19 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		}
 		$sSubject = "You're invited to join " . $sSiteName;
 		$sFrom = $this->getConfig('NotificationEmail', '');
-		
+
 		$oMail = new \PHPMailer();
-		
+
 		$sType = $this->getConfig('NotificationType', 'mail');
 		if (\strtolower($sType) === 'mail')
 		{
-			$oMail->isMail();                                      
+			$oMail->isMail();
 		}
 		else if (\strtolower($sType) === 'smtp')
 		{
-			$oMail->isSMTP();                                      
+			$oMail->isSMTP();
 			$oMail->Host = $this->getConfig('NotificationHost', '');
-			$oMail->Port = (int) $this->getConfig('NotificationPort', 25);;                                    
+			$oMail->Port = (int) $this->getConfig('NotificationPort', 25);;
 			$oMail->SMTPAuth = (bool) $this->getConfig('NotificationUseAuth', false);
 			if ($oMail->SMTPAuth)
 			{
@@ -389,9 +391,9 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 					'verify_peer_name' => false,
 					'allow_self_signed' => true
 				)
-			);			
+			);
 		}
-		
+
 		$oMail->setFrom($sFrom);
 		$oMail->addAddress($Email);
 		$oMail->addReplyTo($sFrom, $sSiteName);
@@ -403,17 +405,17 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
 		return $oMail->send();
 	}
-	
+
 	/**
 	 * Returns Invitation link hash for specified user.
-	 * 
+	 *
 	 * @param int $UserId User identifier.
 	 * @return string
 	 */
 	public function GetInvitationLinkHash($UserId)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
-		
+
 		$oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserUnchecked($UserId);
 		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
 		$bAllowHash = false;
@@ -425,19 +427,19 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		{
 			$bAllowHash = true;
 		}
-		
+
 		if (!$bAllowHash)
 		{
 			return '';
 		}
-		
+
 		$mHash = '';
 		$oMin = $this->getMinModuleDecorator();
 		if ($oMin)
 		{
 			$sMinId = $this->generateMinId($UserId);
 			$mHash = $oMin->GetMinById($sMinId);
-			
+
 			if ($mHash)
 			{
 				if (isset($mHash['__hash__']) && !isset($mHash['Registered']))
@@ -450,20 +452,20 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 				}
 			}
 		}
-		
+
 		return $mHash;
 	}
-	
+
 	/**
 	 * Returns public id of user obtained from Invitation link hash.
-	 * 
+	 *
 	 * @param string $InvitationLinkHash Invitation link hash with information about user and its registration status.
 	 * @return string
 	 */
 	public function GetUserPublicId($InvitationLinkHash)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
-		
+
 		$oUser = $this->getUserByInvitationLinkHash($InvitationLinkHash);
 		if ($oUser)
 		{

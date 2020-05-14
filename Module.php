@@ -392,6 +392,11 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 					'allow_self_signed' => true
 				)
 			);
+			$sSmtpSecure = $this->getConfig('SMTPSecure', '');
+			if (!empty($sSmtpSecure))
+			{
+				$oMail->SMTPSecure = $sSmtpSecure;
+			}
 		}
 
 		$oMail->setFrom($sFrom);

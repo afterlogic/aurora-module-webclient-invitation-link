@@ -79,6 +79,7 @@ export default {
         const parameters = {
           UserId: this.user?.id,
           TenantId: this.user?.tenantId,
+          Email: this.user?.publicId, // this parameter will be used im manager.js for just created users, server doesn't expect it
         }
         webApi.sendRequest({
           moduleName: 'InvitationLinkWebclient',
@@ -112,7 +113,7 @@ export default {
           notification.showError(this.$t('INVITATIONLINKWEBCLIENT.ERROR_SEND_LINK'))
         }
       })
-    }
+    },
   },
 }
 </script>

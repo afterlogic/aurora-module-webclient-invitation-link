@@ -43,6 +43,6 @@ export default {
   },
 
   getUserOtherDataComponents () {
-    return import('src/../../../InvitationLinkWebclient/vue/components/EditUserOtherData')
+    return import('./components/EditUserOtherData')
   },
 }

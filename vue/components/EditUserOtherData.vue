@@ -3,7 +3,7 @@
     <div class="row q-mt-lg">
       <div class="col-1 q-my-sm" v-t="'INVITATIONLINKWEBCLIENT.LABEL_LINK'"></div>
       <div class="col-5">
-        <q-input outlined dense class="bg-white" v-model="link" :disable="true" />
+        <q-input outlined dense bg-color="white" v-model="link" :disable="true" />
       </div>
     </div>
     <div class="row q-mt-md">

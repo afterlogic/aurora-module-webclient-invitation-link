@@ -40,20 +40,29 @@ export default {
 
   data () {
     return {
-      hash: '',
-      link: '',
       resending: false,
     }
   },
 
+  computed: {
+    hash () {
+      const invitationLinks = this.$store.getters['invitationlink/getInvitationLinks']
+      return typesUtils.pString(invitationLinks[this.user?.id]?.hash)
+    },
+
+    link () {
+      return this.hash !== '' ? urlUtils.getAppPath() + '#/register/' + this.hash : ''
+    },
+  },
+
   watch: {
     user () {
-      this.getData()
+      this.requestData()
     },
   },
 
   mounted () {
-    this.getData()
+    this.requestData()
   },
 
   methods: {
@@ -73,23 +82,12 @@ export default {
       this.$emit('save')
     },
 
-    getData () {
-      this.link = ''
+    requestData () {
       if (this.user?.publicId) {
-        const parameters = {
-          UserId: this.user?.id,
-          TenantId: this.user?.tenantId,
-          Email: this.user?.publicId, // this parameter will be used im manager.js for just created users, server doesn't expect it
-        }
-        webApi.sendRequest({
-          moduleName: 'InvitationLinkWebclient',
-          methodName: 'GetInvitationLinkHash',
-          parameters,
-        }).then(result => {
-          if (typesUtils.isNonEmptyString(result)) {
-            this.hash = result
-            this.link = urlUtils.getAppPath() + '#/register/' + result
-          }
+        this.$store.dispatch('invitationlink/requestInvitationLink', {
+          tenantId: this.user.tenantId,
+          userId: this.user.id,
+          publicId: this.user.publicId
         })
       }
     },

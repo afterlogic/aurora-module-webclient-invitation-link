@@ -70,9 +70,19 @@ export default {
       return {}
     },
 
+    /**
+     * Method is used in parent component
+     */
     hasChanges () {
       return false
     },
+
+    /**
+     * Method is used in parent component,
+     * do not use async methods - just simple and plain reverting of values
+     * !! hasChanges method must return true after executing revertChanges method
+     */
+    revertChanges () {},
 
     isDataValid () {
       return true

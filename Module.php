@@ -151,7 +151,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		else
 		{
 			$oUser = $this->getUserByInvitationLinkHash($aArgs['InvitationLinkHash']);
-			if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
+			if ($oUser instanceof \Aurora\Modules\Core\Models\User)
 			{
 				$aArgs['UserId'] = $oUser->EntityId;
 			}

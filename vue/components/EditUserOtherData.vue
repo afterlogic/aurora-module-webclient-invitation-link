@@ -1,19 +1,17 @@
 <template>
   <div v-if="!createMode && link !== ''">
     <div class="row q-mt-lg">
-      <div class="col-1 q-my-sm" v-t="'INVITATIONLINKWEBCLIENT.LABEL_LINK'"></div>
-      <div class="col-5">
-        <q-input outlined dense bg-color="white" v-model="link" :disable="true" />
-      </div>
+      <div class="col-2 q-my-sm" v-t="'INVITATIONLINKWEBCLIENT.LABEL_LINK'"></div>
+      <div class="col-5 q-my-sm"><b>{{ link }}</b></div>
     </div>
     <div class="row q-mt-md">
-      <div class="col-1 q-my-sm"></div>
+      <div class="col-2 q-my-sm"></div>
       <div class="col-10">
         <q-item-label caption v-t="'INVITATIONLINKWEBCLIENT.INFO_PASS_LINK_TO_USER'" />
       </div>
     </div>
     <div class="row q-mt-md">
-      <div class="col-1 q-my-sm"></div>
+      <div class="col-2 q-my-sm"></div>
       <div class="col-5">
         <q-btn :loading="resending" unelevated no-caps dense class="q-px-sm" :ripple="false" color="primary"
                :label="$t('INVITATIONLINKWEBCLIENT.ACTION_RESEND')" @click="resend">

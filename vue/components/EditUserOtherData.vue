@@ -49,7 +49,7 @@ export default {
     },
 
     link () {
-      return this.hash !== '' ? urlUtils.getAppPath() + '#/register/' + this.hash : ''
+      return this.hash !== '' ? urlUtils.getMainAppPath() + '#/register/' + this.hash : ''
     },
   },
 

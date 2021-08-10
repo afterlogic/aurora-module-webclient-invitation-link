@@ -7,6 +7,8 @@
 
 namespace Aurora\Modules\InvitationLinkWebclient;
 
+use Aurora\System\Application;
+
 /**
  * Creates invitation link upon creating user in admin panel, and allows registering new user account with this link.
  *
@@ -360,7 +362,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		if (\is_string($sBody))
 		{
 			$sBody = \strtr($sBody, array(
-				'{{INVITATION_URL}}' => \rtrim($this->oHttp->GetFullUrl(), '\\/ ') . "/index.php#register/" . $Hash,
+				'{{INVITATION_URL}}' => \rtrim(Application::getBaseUrl(), '\\/ ') . "/index.php#register/" . $Hash,
 				'{{SITE_NAME}}' => $sSiteName
 			));
 		}

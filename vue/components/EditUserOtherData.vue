@@ -24,8 +24,9 @@
 <script>
 import notification from 'src/utils/notification'
 import typesUtils from 'src/utils/types'
-import urlUtils from 'src/utils/url'
 import webApi from 'src/utils/web-api'
+
+import settings from 'src/settings'
 
 export default {
   name: 'EditUserInvitationLinkData',
@@ -49,7 +50,7 @@ export default {
     },
 
     link () {
-      return this.hash !== '' ? urlUtils.getMainAppPath() + '#register/' + this.hash : ''
+      return this.hash !== '' ? settings.getBaseUrl() + '#register/' + this.hash : ''
     },
   },
 

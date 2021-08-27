@@ -335,7 +335,8 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 					$sMinId,
 					array(
 						'UserId' => $UserId
-					)
+					),
+					$UserId
 				);
 			}
 			else

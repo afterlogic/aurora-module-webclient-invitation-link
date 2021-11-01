@@ -8,6 +8,7 @@
 namespace Aurora\Modules\InvitationLinkWebclient;
 
 use Aurora\System\Application;
+use PHPMailer\PHPMailer\PHPMailer;
 
 /**
  * Creates invitation link upon creating user in admin panel, and allows registering new user account with this link.
@@ -370,7 +371,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		$sSubject = "You're invited to join " . $sSiteName;
 		$sFrom = $this->getConfig('NotificationEmail', '');
 
-		$oMail = new \PHPMailer();
+		$oMail = new PHPMailer();
 
 		$sType = $this->getConfig('NotificationType', 'mail');
 		if (\strtolower($sType) === 'mail')

@@ -1,50 +1,98 @@
 {
-	"Disabled": [
-		false,
-		"bool"
-	],
-    "RegisterModuleName": [
-		"StandardRegisterFormWebclient",
-		"string"
-	],
-	"LoginModuleName": [
-		"StandardLoginFormWebclient",
-		"string"
-	],
-	"EnableSendInvitationLinkViaMail": [
-		true,
-		"bool"
-	],
-	"NotificationType": [
-		"mail",
-		"string"
-	],
-	"NotificationEmail": [
-		"mail@localhost",
-		"string"
-	],
-	"NotificationHost": [
-		"localhost",
-		"string"
-	],
-	"NotificationPort": [
-		"25",
-		"string"
-	],
-	"NotificationUseAuth": [
-		false,
-		"bool"
-	],
-	"NotificationLogin": [
-		"",
-		"string"
-	],
-	"NotificationPassword": [
-		"",
-		"string"
-	],
-	"SMTPSecure": [
-		"",
-		"string"
-	]
+  "Disabled": [
+    false,
+    "bool"
+  ],
+  "Disabled_Description": [
+    "",
+    "string"
+  ],
+  "RegisterModuleName": [
+    "StandardRegisterFormWebclient",
+    "string"
+  ],
+  "RegisterModuleName_Description": [
+    "",
+    "string"
+  ],
+  "LoginModuleName": [
+    "StandardLoginFormWebclient",
+    "string"
+  ],
+  "LoginModuleName_Description": [
+    "",
+    "string"
+  ],
+  "EnableSendInvitationLinkViaMail": [
+    true,
+    "bool"
+  ],
+  "EnableSendInvitationLinkViaMail_Description": [
+    "",
+    "string"
+  ],
+  "NotificationType": [
+    "mail",
+    "string"
+  ],
+  "NotificationType_Description": [
+    "",
+    "string"
+  ],
+  "NotificationEmail": [
+    "mail@localhost",
+    "string"
+  ],
+  "NotificationEmail_Description": [
+    "",
+    "string"
+  ],
+  "NotificationHost": [
+    "localhost",
+    "string"
+  ],
+  "NotificationHost_Description": [
+    "",
+    "string"
+  ],
+  "NotificationPort": [
+    "25",
+    "string"
+  ],
+  "NotificationPort_Description": [
+    "",
+    "string"
+  ],
+  "NotificationUseAuth": [
+    false,
+    "bool"
+  ],
+  "NotificationUseAuth_Description": [
+    "",
+    "string"
+  ],
+  "NotificationLogin": [
+    "",
+    "string"
+  ],
+  "NotificationLogin_Description": [
+    "",
+    "string"
+  ],
+  "NotificationPassword": [
+    "",
+    "string"
+  ],
+  "NotificationPassword_Description": [
+    "",
+    "string"
+  ],
+  "SMTPSecure": [
+    "",
+    "string"
+  ],
+  "SMTPSecure_Description": [
+    "",
+    "string"
+  ]
 }

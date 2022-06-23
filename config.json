@@ -4,7 +4,7 @@
 		"bool"
 	],
 	"Disabled_Description": [
-		"",
+		"Setting to true disables the module",
 		"string"
 	],
 	"RegisterModuleName": [
@@ -12,7 +12,7 @@
 		"string"
 	],
 	"RegisterModuleName_Description": [
-		"",
+		"Denotes the module used for providing signup interface",
 		"string"
 	],
 	"LoginModuleName": [
@@ -20,7 +20,7 @@
 		"string"
 	],
 	"LoginModuleName_Description": [
-		"",
+		"Denotes the module used for providing login interface",
 		"string"
 	],
 	"EnableSendInvitationLinkViaMail": [
@@ -28,7 +28,7 @@
 		"bool"
 	],
 	"EnableSendInvitationLinkViaMail_Description": [
-		"",
+		"If true, the module will be sending invitation links via email",
 		"string"
 	],
 	"NotificationType": [
@@ -36,7 +36,7 @@
 		"string"
 	],
 	"NotificationType_Description": [
-		"",
+		"Denotes how the mail is sent - mail for standard mail() function of PHP, smtp for sending via SMTP protocol",
 		"string"
 	],
 	"NotificationEmail": [
@@ -44,7 +44,7 @@
 		"string"
 	],
 	"NotificationEmail_Description": [
-		"",
+		"Sender email address used in mail messages sent by this module",
 		"string"
 	],
 	"NotificationHost": [
@@ -52,7 +52,7 @@
 		"string"
 	],
 	"NotificationHost_Description": [
-		"",
+		"SMTP server host used for sending mail by this module",
 		"string"
 	],
 	"NotificationPort": [
@@ -60,7 +60,7 @@
 		"string"
 	],
 	"NotificationPort_Description": [
-		"",
+		"SMTP server port number",
 		"string"
 	],
 	"NotificationUseAuth": [
@@ -68,7 +68,7 @@
 		"bool"
 	],
 	"NotificationUseAuth_Description": [
-		"",
+		"If true, SMTP authentication is used to connect to SMTP server",
 		"string"
 	],
 	"NotificationLogin": [
@@ -76,7 +76,7 @@
 		"string"
 	],
 	"NotificationLogin_Description": [
-		"",
+		"Username used to authenticate on SMTP server",
 		"string"
 	],
 	"NotificationPassword": [
@@ -84,7 +84,7 @@
 		"string"
 	],
 	"NotificationPassword_Description": [
-		"",
+		"Password used to authenticate on SMTP server",
 		"string"
 	],
 	"SMTPSecure": [
@@ -92,7 +92,7 @@
 		"string"
 	],
 	"SMTPSecure_Description": [
-		"",
+		"Set to 'ssl' or 'tls' to use SSL or STARTTLS respectively",
 		"string"
 	]
 }

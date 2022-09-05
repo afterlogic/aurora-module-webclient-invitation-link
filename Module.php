@@ -7,6 +7,7 @@
 
 namespace Aurora\Modules\InvitationLinkWebclient;
 
+use Aurora\System\Api;
 use Aurora\System\Application;
 use PHPMailer\PHPMailer\PHPMailer;
 
@@ -40,7 +41,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
 		$this->subscribeEvent('Core::CreateUser::after', array($this, 'onAfterCreateUser'));
 
-		$this->subscribeEvent('StandardAuth::CreateUserAccount::after', array($this, 'onAfterCreateUserAccount'));
+		$this->subscribeEvent('StandardAuth::CreateAuthenticatedUserAccount::after', array($this, 'onAfterCreateUserAccount'));
 //		$this->subscribeEvent('InvitationLinkWebclient::CreateInvitationLinkHash', array($this, 'onCreateInvitationLinkHash'));
 
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
@@ -156,7 +157,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			$oUser = $this->getUserByInvitationLinkHash($aArgs['InvitationLinkHash']);
 			if ($oUser instanceof \Aurora\Modules\Core\Models\User)
 			{
-				$aArgs['UserId'] = $oUser->EntityId;
+				$aArgs['UserId'] = $oUser->Id;
 			}
 			else
 			{
@@ -198,14 +199,15 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 	 */
 	public function onAfterCreateUserAccount($aArgs, &$mResult)
 	{
+		$userId = Api::getUserIdByPublicId($aArgs['Login']);
 		$oMin = $this->getMinModuleDecorator();
-		if (isset($aArgs['UserId']) && $oMin)
+		if ($oMin)
 		{
 			$mHash = $oMin->GetMinById(
-				$this->generateMinId($aArgs['UserId'])
+				$this->generateMinId($userId)
 			);
 
-			if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
+			if (isset($mHash['__hash__'], $userId) && !isset($mHash['Registered']))
 			{
 				$mHash['Registered'] = true;
 				$oMin->UpdateMinByHash($mHash['__hash__'], $mHash);

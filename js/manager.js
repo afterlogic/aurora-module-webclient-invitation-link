@@ -82,7 +82,7 @@ module.exports = function (oAppData) {
 		Ajax.send(Settings.ServerModuleName, 'GetUserPublicId', { 'InvitationLinkHash': sInvitationLinkHash }, function (oResponse) {
 			if (oResponse.Result)
 			{
-				Screens.showReport(TextUtils.i18n('%MODULENAME%/REPORT_LOGGED_IN'), 0);
+				Screens.showError(TextUtils.i18n('%MODULENAME%/REPORT_LOGGED_IN'), true);
 			}
 		});
 		App.subscribeEvent('clearAndReloadLocation::before', function (oParams) {

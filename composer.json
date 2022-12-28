@@ -6,6 +6,9 @@
 		"afterlogic/aurora-framework": "~0.10.0",
 		"phpmailer/phpmailer": "~6.5"
 	},
+	"autoload": {
+		"classmap": ["/"]
+	},
 	"extra": {
 		"installer-name": "InvitationLinkWebclient"
 	}

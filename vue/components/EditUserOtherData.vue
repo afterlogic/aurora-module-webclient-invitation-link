@@ -2,19 +2,33 @@
   <div v-if="!createMode && link !== ''">
     <div class="row q-mt-lg">
       <div class="col-2 q-my-sm" v-t="'INVITATIONLINKWEBCLIENT.LABEL_LINK'"></div>
-      <div class="col-5 q-my-sm"><b>{{ link }}</b></div>
-    </div>
-    <div class="row q-mt-md">
-      <div class="col-2 q-my-sm"></div>
-      <div class="col-10">
-        <q-item-label caption v-t="'INVITATIONLINKWEBCLIENT.INFO_PASS_LINK_TO_USER'" />
+      <div class="col-5 q-my-sm">
+        <b>{{ link }}</b>
       </div>
     </div>
-    <div class="row q-mt-md">
+    <div class="row q-mt-xs">
+      <div class="col-2 q-my-sm"></div>
+      <div class="col-10">
+        <q-item-label caption>
+          <span v-t="'INVITATIONLINKWEBCLIENT.INFO_PASS_LINK_TO_USER'" />
+          <span v-t="'INVITATIONLINKWEBCLIENT.INFO_LINK_TO_USER_IS_SENT'" v-if="enableSendInvitationLinkViaMail" />
+        </q-item-label>
+      </div>
+    </div>
+    <div class="row q-mt-md q-mb-md" v-if="enableSendInvitationLinkViaMail">
       <div class="col-2 q-my-sm"></div>
       <div class="col-5">
-        <q-btn :loading="resending" unelevated no-caps dense class="q-px-sm" :ripple="false" color="primary"
-               :label="$t('INVITATIONLINKWEBCLIENT.ACTION_RESEND')" @click="resend">
+        <q-btn
+          :loading="resending"
+          unelevated
+          no-caps
+          dense
+          class="q-px-sm"
+          :ripple="false"
+          color="primary"
+          :label="$t('INVITATIONLINKWEBCLIENT.ACTION_RESEND')"
+          @click="resend"
+        >
         </q-btn>
       </div>
     </div>
@@ -26,7 +40,9 @@ import notification from 'src/utils/notification'
 import typesUtils from 'src/utils/types'
 import webApi from 'src/utils/web-api'
 
-import settings from 'src/settings'
+import coreSettings from 'src/settings'
+
+import settings from '../settings'
 
 export default {
   name: 'EditUserInvitationLinkData',
@@ -37,42 +53,43 @@ export default {
     currentTenantId: Number,
   },
 
-  data () {
+  data() {
     return {
       resending: false,
+      enableSendInvitationLinkViaMail: settings.isEnableSendInvitationLinkViaMail(),
     }
   },
 
   computed: {
-    hash () {
+    hash() {
       const invitationLinks = this.$store.getters['invitationlink/getInvitationLinks']
       return typesUtils.pString(invitationLinks[this.user?.id]?.hash)
     },
 
-    link () {
-      return this.hash !== '' ? settings.getBaseUrl() + '#register/' + this.hash : ''
+    link() {
+      return this.hash !== '' ? coreSettings.getBaseUrl() + '#register/' + this.hash : ''
     },
   },
 
   watch: {
-    user () {
+    user() {
       this.requestData()
     },
   },
 
-  mounted () {
+  mounted() {
     this.requestData()
   },
 
   methods: {
-    getSaveParameters () {
+    getSaveParameters() {
       return {}
     },
 
     /**
      * Method is used in parent component
      */
-    hasChanges () {
+    hasChanges() {
       return false
     },
 
@@ -81,50 +98,54 @@ export default {
      * do not use async methods - just simple and plain reverting of values
      * !! hasChanges method must return true after executing revertChanges method
      */
-    revertChanges () {},
+    revertChanges() {},
 
-    isDataValid () {
+    isDataValid() {
       return true
     },
 
-    save () {
+    save() {
       this.$emit('save')
     },
 
-    requestData () {
+    requestData() {
       if (this.user?.publicId) {
         this.$store.dispatch('invitationlink/requestInvitationLink', {
           tenantId: this.user.tenantId,
           userId: this.user.id,
-          publicId: this.user.publicId
+          publicId: this.user.publicId,
         })
       }
     },
 
-    resend () {
+    resend() {
+      if (!this.enableSendInvitationLinkViaMail || this.resending) {
+        return
+      }
+
       const parameters = {
         Email: this.user?.publicId,
         Hash: this.hash,
         TenantId: this.user?.tenantId,
       }
       this.resending = true
-      webApi.sendRequest({
-        moduleName: 'InvitationLinkWebclient',
-        methodName: 'SendNotification',
-        parameters,
-      }).then(result => {
-        this.resending = false
-        if (result) {
-          notification.showReport(this.$t('INVITATIONLINKWEBCLIENT.REPORT_SEND_LINK'))
-        } else {
-          notification.showError(this.$t('INVITATIONLINKWEBCLIENT.ERROR_SEND_LINK'))
-        }
-      })
+      webApi
+        .sendRequest({
+          moduleName: 'InvitationLinkWebclient',
+          methodName: 'SendNotification',
+          parameters,
+        })
+        .then((result) => {
+          this.resending = false
+          if (result) {
+            notification.showReport(this.$t('INVITATIONLINKWEBCLIENT.REPORT_SEND_LINK'))
+          } else {
+            notification.showError(this.$t('INVITATIONLINKWEBCLIENT.ERROR_SEND_LINK'))
+          }
+        })
     },
   },
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

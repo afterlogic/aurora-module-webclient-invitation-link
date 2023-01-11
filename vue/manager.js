@@ -7,6 +7,8 @@ import webApi from 'src/utils/web-api'
 
 import eventBus from 'src/event-bus'
 
+import settings from './settings'
+
 let justCreatedId = 0
 
 const _getDbAdminSettingsPerUserHintComponent = (params) => {
@@ -20,7 +22,12 @@ const _webApiResponseHandler = ({ moduleName, methodName, parameters, response }
   if (moduleName === 'Core' && methodName === 'CreateUser' && response.Result) {
     justCreatedId = typesUtils.pInt(response.Result)
   }
-  if (moduleName === 'InvitationLinkWebclient' && methodName === 'GetInvitationLinkHash' && response.Result) {
+  if (
+    settings.isEnableSendInvitationLinkViaMail() &&
+    moduleName === 'InvitationLinkWebclient' &&
+    methodName === 'GetInvitationLinkHash' &&
+    response.Result
+  ) {
     const userId = parameters.UserId
     const hash = response.Result
     if (userId === justCreatedId) {
@@ -30,15 +37,17 @@ const _webApiResponseHandler = ({ moduleName, methodName, parameters, response }
         Hash: hash,
         TenantId: parameters.TenantId,
       }
-      webApi.sendRequest({
-        moduleName: 'InvitationLinkWebclient',
-        methodName: 'SendNotification',
-        parameters: sendNotificationParameters,
-      }).then(result => {
-        if (!result) {
-          notification.showReport(i18n.tc('INVITATIONLINKWEBCLIENT.ERROR_AUTO_SEND_LINK'))
-        }
-      })
+      webApi
+        .sendRequest({
+          moduleName: 'InvitationLinkWebclient',
+          methodName: 'SendNotification',
+          parameters: sendNotificationParameters,
+        })
+        .then((result) => {
+          if (!result) {
+            notification.showReport(i18n.tc('INVITATIONLINKWEBCLIENT.ERROR_AUTO_SEND_LINK'))
+          }
+        })
     }
   }
 }
@@ -48,14 +57,18 @@ export default {
 
   requiredModules: [],
 
-  initSubscriptions (appData) {
+  init(appData) {
+    settings.init(appData)
+  },
+
+  initSubscriptions(appData) {
     eventBus.$off('DbAdminSettingsPerUser::GetAdditionalComponents', _getDbAdminSettingsPerUserHintComponent)
     eventBus.$on('DbAdminSettingsPerUser::GetAdditionalComponents', _getDbAdminSettingsPerUserHintComponent)
     eventBus.$off('webApi::Response', _webApiResponseHandler)
     eventBus.$on('webApi::Response', _webApiResponseHandler)
   },
 
-  getUserOtherDataComponents () {
+  getUserOtherDataComponents() {
     return import('./components/EditUserOtherData')
   },
 }

@@ -46,14 +46,6 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
 		$this->subscribeEvent('Core::DeleteUser::after', array($this, 'onAfterDeleteUser'));
-
-		$this->includeTemplate('AdminPanelWebclient_EditUserView', 'Edit-User-After', 'templates/InvitationLinkView.html', self::GetName());
-
-		$oUser = \Aurora\System\Api::getAuthenticatedUser();
-		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
-		{
-			$this->includeTemplate('StandardAuthWebclient_StandardAccountsSettingsFormView', 'Edit-Standard-Account-After', 'templates/AccountPasswordHintView.html', self::GetName());
-		}
 	}
 
 	/**

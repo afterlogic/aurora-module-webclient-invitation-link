@@ -12,8 +12,7 @@ module.exports = {
 	RegisterModuleName: 'StandardRegisterFormWebclient',
 	RegisterModuleHash: 'register',
 	LoginModuleHash: 'login',
-	EnableSendInvitationLinkViaMail: true,
-	
+
 	/**
 	 * Initializes settings from AppData object sections.
 	 * 
@@ -28,7 +27,6 @@ module.exports = {
 			this.RegisterModuleName = Types.pString(oAppDataSection.RegisterModuleName, this.RegisterModuleName);
 			this.RegisterModuleHash = Types.pString(oAppDataSection.RegisterModuleHash, this.RegisterModuleHash);
 			this.LoginModuleHash = Types.pString(oAppDataSection.LoginModuleHash, this.LoginModuleHash);
-			this.EnableSendInvitationLinkViaMail = Types.pBool(oAppDataSection.EnableSendInvitationLinkViaMail, this.EnableSendInvitationLinkViaMail);
 		}
 	}
 };

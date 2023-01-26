@@ -42,7 +42,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 		$this->subscribeEvent('Core::CreateUser::after', array($this, 'onAfterCreateUser'));
 
 		$this->subscribeEvent('StandardAuth::CreateAuthenticatedUserAccount::after', array($this, 'onAfterCreateUserAccount'));
-//		$this->subscribeEvent('InvitationLinkWebclient::CreateInvitationLinkHash', array($this, 'onCreateInvitationLinkHash'));
+		$this->subscribeEvent('StandardAuth::UpdateAccount::after', array($this, 'onAfterUpdateAccount'));
 
 		$this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
 		$this->subscribeEvent('Core::DeleteUser::after', array($this, 'onAfterDeleteUser'));
@@ -175,8 +175,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 				$mHash = $oMin->GetMinByHash($aArgs['InvitationLinkHash']);
 				if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
 				{
-					$mHash['Registered'] = true;
-					$oMin->UpdateMinByHash($aArgs['InvitationLinkHash'], $mHash);
+					$oMin->DeleteMinByHash($mHash['__hash__']);
 				}
 			}
 		}
@@ -201,8 +200,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
 			if (isset($mHash['__hash__'], $userId) && !isset($mHash['Registered']))
 			{
-				$mHash['Registered'] = true;
-				$oMin->UpdateMinByHash($mHash['__hash__'], $mHash);
+				$oMin->DeleteMinByHash($mHash['__hash__']);
 			}
 		}
 
@@ -233,8 +231,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 					$mHash = $oMin->GetMinByHash($InvitationLinkHash);
 					if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered']))
 					{
-						$mHash['Registered'] = true;
-						$oMin->UpdateMinByHash($InvitationLinkHash, $mHash);
+						$oMin->DeleteMinByHash($mHash['__hash__']);
 					}
 				}
 			}
@@ -286,6 +283,30 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 			$this->getMinModuleDecorator()->DeleteMinByID(
 				$this->generateMinId($aArgs['UserId'])
 			);
+		}
+	}
+
+	/**
+	 * @ignore
+	 * @param array $aArgs
+	 * @param mixed $mResult
+	 */
+	public function onAfterUpdateAccount($aArgs, $mResult)
+	{
+		if (isset($aArgs['UserId']) && $mResult) {
+			$oMinModule = $this->getMinModuleDecorator();
+			if ($oMinModule) {
+				$oMins = $oMinModule->GetMinListByUserId($aArgs['UserId']);
+				foreach ($oMins as $oMin) {
+					$data = @\json_decode($oMin->Data, true);
+					if (isset($data['__hash_id__'])) {
+						$hashIdData = explode('|', $data['__hash_id__']);
+						if (isset($hashIdData[0]) && $hashIdData[0] === self::GetName()) {
+							$oMinModule->DeleteMinByID($oMin->HashId);
+						}
+					}
+				}
+			}
 		}
 	}
 	/***** private functions *****/

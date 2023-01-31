@@ -42,7 +42,6 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $this->subscribeEvent('Core::CreateUser::after', array($this, 'onAfterCreateUser'));
 
         $this->subscribeEvent('StandardAuth::CreateAuthenticatedUserAccount::after', array($this, 'onAfterCreateUserAccount'));
-        $this->subscribeEvent('StandardAuth::UpdateAccount::after', array($this, 'onAfterUpdateAccount'));
 
         $this->subscribeEvent('CreateOAuthAccount', array($this, 'onCreateOAuthAccount'));
         $this->subscribeEvent('Core::DeleteUser::after', array($this, 'onAfterDeleteUser'));
@@ -187,8 +186,6 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 $oMin->DeleteMinByHash($mHash['__hash__']);
             }
         }
-
-        //		$mResult = $aArgs;
     }
 
     /**
@@ -229,23 +226,8 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     {
         $iUserId = isset($mResult) && (int) $mResult > 0 ? $mResult : 0;
         if (0 < $iUserId) {
-            $sHash = $this->CreateInvitationLinkHash($iUserId);
-            if (!empty($sHash)) {
-                $aEventArgs = array(
-                    'PublicId' => $aArgs['PublicId'],
-                    'Hash' => $sHash
-                );
-                $this->broadcastEvent(
-                    'CreateInvitationLinkHash',
-                    $aEventArgs
-                );
-            }
+            self::Decorator()->CreateInvitationLinkHash($iUserId);
         }
-    }
-
-    public function onCreateInvitationLinkHash($aArgs, &$mResult)
-    {
-        $mResult = $this->Decorator()->SendNotification($aArgs['PublicId'], $aArgs['Hash']);
     }
 
     /**
@@ -260,30 +242,6 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             $this->getMinModuleDecorator()->DeleteMinByID(
                 $this->generateMinId($aArgs['UserId'])
             );
-        }
-    }
-
-    /**
-     * @ignore
-     * @param array $aArgs
-     * @param mixed $mResult
-     */
-    public function onAfterUpdateAccount($aArgs, $mResult)
-    {
-        if (isset($aArgs['UserId']) && $mResult) {
-            $oMinModule = $this->getMinModuleDecorator();
-            if ($oMinModule) {
-                $oMins = $oMinModule->GetMinListByUserId($aArgs['UserId']);
-                foreach ($oMins as $oMin) {
-                    $data = @\json_decode($oMin->Data, true);
-                    if (isset($data['__hash_id__'])) {
-                        $hashIdData = explode('|', $data['__hash_id__']);
-                        if (isset($hashIdData[0]) && $hashIdData[0] === self::GetName()) {
-                            $oMinModule->DeleteMinByID($oMin->HashId);
-                        }
-                    }
-                }
-            }
         }
     }
     /***** private functions *****/

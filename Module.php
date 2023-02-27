@@ -119,7 +119,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             $mHash = $oMin->GetMinByHash($InvitationLinkHash);
             if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered'])) {
                 $iUserId = $mHash['UserId'];
-                $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserUnchecked($iUserId);
+                $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($iUserId);
             }
         }
         return $oUser;
@@ -366,7 +366,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     {
         \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 
-        $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserUnchecked($UserId);
+        $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($UserId);
         $oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
         $bAllowHash = false;
         if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && !empty($oUser) && $oUser->IdTenant === $oAuthenticatedUser->IdTenant) {

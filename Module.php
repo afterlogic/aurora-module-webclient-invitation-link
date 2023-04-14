@@ -28,6 +28,15 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         'Min'
     );
 
+    /**
+     *
+     * @return Module
+     */
+    public static function Decorator()
+    {
+        return parent::Decorator();
+    }
+
     /***** private functions *****/
     /**
      * Initializes module.
@@ -50,7 +59,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     /**
     * Returns Min module decorator.
     *
-    * @return \CApiModuleDecorator
+    * @return \Aurora\Modules\Min\Module
     */
     private function getMinModuleDecorator()
     {
@@ -71,6 +80,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $sResult = null;
         $oRegisterModuleDecorator = \Aurora\System\Api::GetModuleDecorator($this->getConfig('RegisterModuleName'));
         if ($oRegisterModuleDecorator) {
+            /* @phpstan-ignore-next-line */
             $oRegisterModuleSettings = $oRegisterModuleDecorator->GetSettings();
             $sResult = $oRegisterModuleSettings['HashModuleName'];
         }
@@ -88,6 +98,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $sResult = null;
         $oLoginModuleDecorator = \Aurora\System\Api::GetModuleDecorator($this->getConfig('LoginModuleName'));
         if ($oLoginModuleDecorator) {
+            /* @phpstan-ignore-next-line */
             $oLoginModuleSettings = $oLoginModuleDecorator->GetSettings();
             $sResult = $oLoginModuleSettings['HashModuleName'];
         }
@@ -109,7 +120,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
      * Returns user with identifier obtained from the Invitation link hash.
      *
      * @param string $InvitationLinkHash Invitation link hash.
-     * @return \Aurora\Modules\Core\Classes\User
+     * @return \Aurora\Modules\Core\Models\User
      */
     protected function getUserByInvitationLinkHash($InvitationLinkHash)
     {
@@ -182,7 +193,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                 $this->generateMinId($userId)
             );
 
-            if (isset($mHash['__hash__'], $userId) && !isset($mHash['Registered'])) {
+            if ($userId && isset($mHash['__hash__']) && !isset($mHash['Registered'])) {
                 $oMin->DeleteMinByHash($mHash['__hash__']);
             }
         }
@@ -192,7 +203,9 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
      * Writes to $oUser variable user object for Invitation link hash from cookie.
      *
      * @ignore
-     * @param \Aurora\Modules\Core\Classes\User $oUser
+     * 
+     * @param array $aArgs
+     * @param \Aurora\Modules\Core\Models\User $oUser
      */
     public function onCreateOAuthAccount($aArgs, &$oUser)
     {
@@ -200,7 +213,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             $InvitationLinkHash = $_COOKIE['InvitationLinkHash'];
 
             $oFoundUser = $this->getUserByInvitationLinkHash($InvitationLinkHash);
-            if (!empty($oFoundUser)) {
+            if ($oFoundUser) {
                 unset($_COOKIE['InvitationLinkHash']);
                 $oUser = $oFoundUser;
 
@@ -234,7 +247,8 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
      * Deletes hash which are owened by the specified user.
      *
      * @ignore
-     * @param int $iUserId User Identifier.
+     * @param array $aArgs
+     * @param mixed $mResult
      */
     public function onAfterDeleteUser($aArgs, $mResult)
     {
@@ -369,9 +383,9 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($UserId);
         $oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
         $bAllowHash = false;
-        if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && !empty($oUser) && $oUser->IdTenant === $oAuthenticatedUser->IdTenant) {
+        if ($oAuthenticatedUser && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oUser && $oUser->IdTenant === $oAuthenticatedUser->IdTenant) {
             $bAllowHash = true;
-        } elseif (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin) {
+        } elseif ($oAuthenticatedUser && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin) {
             $bAllowHash = true;
         }
 

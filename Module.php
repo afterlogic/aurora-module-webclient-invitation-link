@@ -203,7 +203,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
      * Writes to $oUser variable user object for Invitation link hash from cookie.
      *
      * @ignore
-     * 
+     *
      * @param array $aArgs
      * @param \Aurora\Modules\Core\Models\User $oUser
      */

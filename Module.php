@@ -18,6 +18,8 @@ use PHPMailer\PHPMailer\PHPMailer;
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2023, Afterlogic Corp.
  *
+ * @property Settings $oModuleSettings
+ *
  * @package Modules
  */
 class Module extends \Aurora\System\Module\AbstractWebclientModule
@@ -87,7 +89,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     protected function getRegisterModuleHash()
     {
         $sResult = null;
-        $oRegisterModuleDecorator = \Aurora\System\Api::GetModuleDecorator($this->getConfig('RegisterModuleName'));
+        $oRegisterModuleDecorator = \Aurora\System\Api::GetModuleDecorator($this->oModuleSettings->RegisterModuleName);
         if ($oRegisterModuleDecorator) {
             /* @phpstan-ignore-next-line */
             $oRegisterModuleSettings = $oRegisterModuleDecorator->GetSettings();
@@ -105,7 +107,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     protected function getLoginModuleHash()
     {
         $sResult = null;
-        $oLoginModuleDecorator = \Aurora\System\Api::GetModuleDecorator($this->getConfig('LoginModuleName'));
+        $oLoginModuleDecorator = \Aurora\System\Api::GetModuleDecorator($this->oModuleSettings->LoginModuleName);
         if ($oLoginModuleDecorator) {
             /* @phpstan-ignore-next-line */
             $oLoginModuleSettings = $oLoginModuleDecorator->GetSettings();
@@ -281,9 +283,9 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
 
         return array(
             'RegisterModuleHash' => $this->getRegisterModuleHash(),
-            'RegisterModuleName' => $this->getConfig('RegisterModuleName'),
+            'RegisterModuleName' => $this->oModuleSettings->RegisterModuleName,
             'LoginModuleHash' => $this->getLoginModuleHash(),
-            'EnableSendInvitationLinkViaMail' => $this->getConfig('EnableSendInvitationLinkViaMail'),
+            'EnableSendInvitationLinkViaMail' => $this->oModuleSettings->EnableSendInvitationLinkViaMail,
         );
     }
 
@@ -337,22 +339,22 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             ));
         }
         $sSubject = "You're invited to join " . $sSiteName;
-        $sFrom = $this->getConfig('NotificationEmail', '');
+        $sFrom = $this->oModuleSettings->NotificationEmail;
 
         $oMail = new PHPMailer();
 
-        $sType = $this->getConfig('NotificationType', 'mail');
+        $sType = $this->oModuleSettings->NotificationType;
         if (\strtolower($sType) === 'mail') {
             $oMail->isMail();
         } elseif (\strtolower($sType) === 'smtp') {
             $oMail->isSMTP();
-            $oMail->Host = $this->getConfig('NotificationHost', '');
-            $oMail->Port = (int) $this->getConfig('NotificationPort', 25);
+            $oMail->Host = $this->oModuleSettings->NotificationHost;
+            $oMail->Port = (int) $this->oModuleSettings->NotificationPort;
             ;
-            $oMail->SMTPAuth = (bool) $this->getConfig('NotificationUseAuth', false);
+            $oMail->SMTPAuth = (bool) $this->oModuleSettings->NotificationUseAuth;
             if ($oMail->SMTPAuth) {
-                $oMail->Username = $this->getConfig('NotificationLogin', '');
-                $oMail->Password = $this->getConfig('NotificationPassword', '');
+                $oMail->Username = $this->oModuleSettings->NotificationLogin;
+                $oMail->Password = $this->oModuleSettings->NotificationPassword;
             }
             $oMail->SMTPOptions = array(
                 'ssl' => array(
@@ -361,7 +363,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
                     'allow_self_signed' => true
                 )
             );
-            $sSmtpSecure = $this->getConfig('SMTPSecure', '');
+            $sSmtpSecure = $this->oModuleSettings->SMTPSecure;
             if (!empty($sSmtpSecure)) {
                 $oMail->SMTPSecure = $sSmtpSecure;
             }

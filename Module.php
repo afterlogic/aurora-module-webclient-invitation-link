@@ -96,8 +96,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     {
         $sResult = null;
         $oRegisterModuleDecorator = \Aurora\System\Api::GetModuleDecorator($this->oModuleSettings->RegisterModuleName);
-        if ($oRegisterModuleDecorator) {
-            /* @phpstan-ignore-next-line */
+        if ($oRegisterModuleDecorator && method_exists($oRegisterModuleDecorator, 'GetSettings')) {
             $oRegisterModuleSettings = $oRegisterModuleDecorator->GetSettings();
             $sResult = $oRegisterModuleSettings['HashModuleName'];
         }
@@ -114,8 +113,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     {
         $sResult = null;
         $oLoginModuleDecorator = \Aurora\System\Api::GetModuleDecorator($this->oModuleSettings->LoginModuleName);
-        if ($oLoginModuleDecorator) {
-            /* @phpstan-ignore-next-line */
+        if ($oLoginModuleDecorator && method_exists($oLoginModuleDecorator, 'GetSettings')) {
             $oLoginModuleSettings = $oLoginModuleDecorator->GetSettings();
             $sResult = $oLoginModuleSettings['HashModuleName'];
         }

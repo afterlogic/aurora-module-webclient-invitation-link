@@ -29,7 +29,8 @@ export default {
             if (typesUtils.isNonEmptyString(result)) {
               commit('setInvitationLink', { tenantId, userId, publicId, hash: result })
             }
-          })
+          },
+          () => {})
       }
     },
   },

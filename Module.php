@@ -333,6 +333,11 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     {
         \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 
+        $bEnableSendInvitation = $this->oModuleSettings->EnableSendInvitationLinkViaMail;
+        if (!$bEnableSendInvitation) {
+            return false;
+        }
+        
         $oModuleManager = \Aurora\System\Api::GetModuleManager();
         $sSiteName = $oModuleManager->getModuleConfigValue('Core', 'SiteName');
         $sBody = \file_get_contents($this->GetPath() . '/templates/InvitationMail.html');

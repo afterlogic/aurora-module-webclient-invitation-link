@@ -62,8 +62,8 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
      */
     public function init()
     {
-        $this->subscribeEvent('Register::before', array($this, 'onBeforeRegister'));
-        $this->subscribeEvent('Register::after', array($this, 'onAfterRegister'));
+        $this->subscribeEvent('StandardRegisterFormWebclient::Register::before', array($this, 'onBeforeRegister'));
+        $this->subscribeEvent('StandardRegisterFormWebclient::Register::after', array($this, 'onAfterRegister'));
 
         $this->subscribeEvent('Core::CreateUser::after', array($this, 'onAfterCreateUser'));
 
@@ -145,7 +145,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
             $mHash = $oMin->GetMinByHash($InvitationLinkHash);
             if (isset($mHash['__hash__'], $mHash['UserId']) && !isset($mHash['Registered'])) {
                 $iUserId = $mHash['UserId'];
-                $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($iUserId);
+                $oUser = \Aurora\Api::getUserById($iUserId);
             }
         }
         return $oUser;
@@ -337,7 +337,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
         if (!$bEnableSendInvitation) {
             return false;
         }
-        
+
         $oModuleManager = \Aurora\System\Api::GetModuleManager();
         $sSiteName = $oModuleManager->getModuleConfigValue('Core', 'SiteName');
         $sBody = \file_get_contents($this->GetPath() . '/templates/InvitationMail.html');
@@ -400,7 +400,7 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
     {
         \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 
-        $oUser = \Aurora\Modules\Core\Module::Decorator()->GetUserWithoutRoleCheck($UserId);
+        $oUser = \Aurora\Api::getUserById($UserId);
         $oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
         $bAllowHash = false;
         if ($oAuthenticatedUser && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oUser && $oUser->IdTenant === $oAuthenticatedUser->IdTenant) {

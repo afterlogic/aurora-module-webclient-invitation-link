@@ -62,8 +62,8 @@ class Module extends \Aurora\System\Module\AbstractWebclientModule
      */
     public function init()
     {
-        $this->subscribeEvent('Register::before', array($this, 'onBeforeRegister'));
-        $this->subscribeEvent('Register::after', array($this, 'onAfterRegister'));
+        $this->subscribeEvent('StandardRegisterFormWebclient::Register::before', array($this, 'onBeforeRegister'));
+        $this->subscribeEvent('StandardRegisterFormWebclient::Register::after', array($this, 'onAfterRegister'));
 
         $this->subscribeEvent('Core::CreateUser::after', array($this, 'onAfterCreateUser'));
 
